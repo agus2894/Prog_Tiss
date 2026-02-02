@@ -1,4 +1,4 @@
-# 🏥 Calculadora TISS - Sistema de Gestión UTI 22 Camas
+# 🏥 Calculadora TISS - Sistema de Gestión
 
 ## 📋 Descripción
 
@@ -19,7 +19,7 @@ Aplicación web completa para la gestión de pacientes en unidades de terapia in
 
 ## 🎯 Funcionalidades Principales
 
-### 1. **Mapa Visual de 22 Camas**
+### 1. **Mapa Visual**
 
 Visualización en tiempo real del estado de todas las camas de la UTI con código de colores según clasificación TISS.
 
@@ -158,8 +158,6 @@ Modal con vista detallada de todos los pacientes ingresados.
   - Diagnóstico
   - Observaciones
 
-**Acceso rápido:** Botón "📋 Ver Lista" o atajo `Ctrl+L`
-
 ---
 
 ### 9. **Impresión Optimizada**
@@ -176,8 +174,6 @@ Vista especialmente diseñada para impresión de reportes.
 - Muestra notas del turno
 - Formato compacto y legible
 
-**Acceso:** Botón "🖨️ Imprimir" o `Ctrl+P`
-
 ---
 
 ### 10. **Persistencia de Datos**
@@ -185,13 +181,13 @@ Vista especialmente diseñada para impresión de reportes.
 Todos los datos se guardan automáticamente en el navegador.
 
 **Se guarda:**
-- Estado de las 22 camas
+- Estado de las camas
 - Información completa de pacientes
 - Turno seleccionado
 - Enfermeros en turno
 - Notas del turno
 
-**Nota:** Los datos persisten incluso al cerrar el navegador. Para limpiar: usar botón "🗑️ Limpiar Todo"
+**Nota:** Los datos persisten incluso al cerrar el navegador.
 
 ---
 
@@ -233,7 +229,6 @@ Todos los datos se guardan automáticamente en el navegador.
 ## 🚀 Cómo Usar
 
 ### Inicio Rápido
-1. Abrir `index.html` en cualquier navegador web moderno
 2. Seleccionar el turno actual
 3. Registrar número de enfermeros disponibles
 4. Hacer clic en una cama para agregar/editar paciente
@@ -246,22 +241,13 @@ Todos los datos se guardan automáticamente en el navegador.
 5. Clic en "💾 Guardar"
 
 ### Ver Reporte
-1. Clic en "📋 Ver Lista" para vista detallada
-2. Clic en "🖨️ Imprimir" para reporte imprimible
+1. Clic en "Ver Lista" para vista detallada
+2. Clic en "Imprimir" para reporte imprimible
 
 ### Gestión de Turnos
 1. Cambiar turno en selector superior
 2. Ajustar enfermeros disponibles
 3. Agregar notas del turno si es necesario
-
----
-
-## 💻 Requisitos Técnicos
-
-- **Navegador:** Cualquier navegador moderno (Chrome, Firefox, Edge, Safari)
-- **Conexión:** No requiere internet (funciona offline)
-- **Instalación:** No requiere instalación, solo abrir el archivo HTML
-- **Almacenamiento:** Usa localStorage del navegador
 
 ---
 
@@ -298,7 +284,7 @@ Herramienta de uso interno para apoyo en la gestión de UTI.
 
 **Versión:** 2.0  
 **Última actualización:** Febrero 2026  
-**Desarrollada para:** Gestión UTI 22 Camas
+**Desarrollada para:** Gestión Camas
 
 
 ## 🛠️ Tecnologías
@@ -306,13 +292,6 @@ Herramienta de uso interno para apoyo en la gestión de UTI.
 - HTML5
 - CSS3 (diseño responsive)
 - JavaScript vanilla (sin dependencias)
-
-## 📱 Compatibilidad
-
-- ✅ Chrome / Edge
-- ✅ Firefox
-- ✅ Safari
-- ✅ Móviles (iOS/Android)
 
 ## 🎨 Características de diseño
 
