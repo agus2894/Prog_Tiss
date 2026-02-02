@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora TISS - Gestión de UTI</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Disclaimer Principal -->
+        <div class="disclaimer-header">
+            <div class="warning-icon">⚠️</div>
+            <div class="disclaimer-text">
+                <strong>HERRAMIENTA INFORMATIVA</strong>
+                <p>Esta aplicación NO toma decisiones operativas. Los datos mostrados son referenciales. Las decisiones finales sobre dotación de personal corresponden exclusivamente a la jefatura y coordinación de Enfermeria.</p>
+            </div>
+        </div>
+
+        <header>
+            <h1>Gestión TISS - UTI 22 Camas</h1>
+            <p class="subtitle">Sistema de Puntuación de Intervenciones Terapéuticas</p>
+            <div class="header-controls">
+                <div class="turno-selector">
+                    <label for="turnoSelect">⏰ Turno:</label>
+                    <select id="turnoSelect">
+                        <option value="mañana">Mañana (7-14hs)</option>
+                        <option value="tarde">Tarde (14-21hs)</option>
+                        <option value="noche">Nochede enfermería y dirección médica (21-07hs)</option>
+                        <option value="franquero">Franquero (7-21hs)</option>
+                    </select>
+                </div>
+                <div class="enfermeros-input">
+                    <label for="enfermerosEnTurno">👥 Enfermeros en turno:</label>
+                    <input type="number" id="enfermerosEnTurno" min="0" max="30" value="0" />
+                </div>
+            </div>
+        </header>
+
+        <!-- Resumen Global -->
+        <div class="global-summary">
+            <div class="summary-card">
+                <div class="summary-icon">🛏️</div>
+                <div class="summary-content">
+                    <div class="summary-value" id="camasOcupadas">0</div>
+                    <div class="summary-label">Camas Ocupadas</div>
+                </div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-icon">📊</div>
+                <div class="summary-content">
+                    <div class="summary-value" id="tissTotal">0</div>
+                    <div class="summary-label">TISS Total</div>
+                </div>
+            </div>
+            <div class="summary-card highlight">
+                <div class="summary-icon">👩‍⚕️</div>
+                <div class="summary-content">
+                    <div class="summary-value">
+                        <span id="enfermerosEnTurnoDisplay">0</span> / <span id="enfermerosNecesarios">0</span>
+                    </div>
+                    <div class="summary-label">Enfermeros: En Turno / Necesarios</div>
+                    <div class="summary-info" id="diferenciaNota"></div>
+                </div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-icon">📈</div>
+                <div class="summary-content">
+                    <div class="summary-value" id="tissPromedio">0</div>
+                    <div class="summary-label">TISS Promedio</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Notas del Turno -->
+        <div class="notas-turno-section">
+            <label for="notasTurno">📝 Notas del Turno:</label>
+            <textarea id="notasTurno" placeholder="Observaciones generales del turno, cambios importantes, situaciones especiales..."></textarea>
+        </div>
+
+        <!-- Mapa de Camas -->
+        <div class="beds-section">
+            <div class="section-header">
+                <h2>Mapa de Camas UTI</h2>
+                <div class="section-actions">
+                    <button id="verListaBtn" class="btn-primary-small">📋 Ver Lista</button>
+                    <button id="imprimirBtn" class="btn-primary-small">🖨️ Imprimir</button>
+                    <button id="limpiarTodoBtn" class="btn-secondary-small">🗑️ Limpiar Todo</button>
+                </div>
+            </div>
+            
+            <div class="beds-grid" id="bedsGrid">
+                <!-- Se generará dinámicamente con JavaScript -->
+            </div>
+
+            <div class="legend">
+                <div class="legend-item">
+                    <span class="legend-color empty"></span>
+                    <span>Vacía</span>
+                </div>
+                <div class="legend-item">
+                    <span class="legend-color clase1"></span>
+                    <span>Clase I (< 10)</span>
+                </div>
+                <div class="legend-item">
+                    <span class="legend-color clase2"></span>
+                    <span>Clase II (10-19)</span>
+                </div>
+                <div class="legend-item">
+                    <span class="legend-color clase3"></span>
+                    <span>Clase III (20-39)</span>
+                </div>
+                <div class="legend-item">
+                    <span class="legend-color clase4"></span>
+                    <span>Clase IV (≥ 40)</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Distribución por Clases -->
+        <div class="distribution-section">
+            <h2>Distribución de Pacientes por Clase</h2>
+            <div class="distribution-grid">
+                <div class="distribution-card class-1">
+                    <h3>Clase I</h3>
+                    <div class="distribution-count" id="countClase1">0</div>
+                    <p>< 10 puntos</p>
+                    <p class="ratio-text">Ratio: 1:4</p>
+                </div>
+                <div class="distribution-card class-2">
+                    <h3>Clase II</h3>
+                    <div class="distribution-count" id="countClase2">0</div>
+                    <p>10-19 puntos</p>
+                    <p class="ratio-text">Ratio: 1:4</p>
+                </div>
+                <div class="distribution-card class-3">
+                    <h3>Clase III</h3>
+                    <div class="distribution-count" id="countClase3">0</div>
+                    <p>20-39 puntos</p>
+                    <p class="ratio-text">Ratio: 2:1</p>
+                </div>
+                <div class="distribution-card class-4">
+                    <h3>Clase IV</h3>
+                    <div class="distribution-count" id="countClase4">0</div>
+                    <p>≥ 40 puntos</p>
+                    <p class="ratio-text">Ratio: 1:1</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal para editar paciente -->
+        <div id="patientModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 id="modalTitle">Cama #1</h2>
+                    <button class="modal-close" id="closeModal">&times;</button>
+                </div>
+                
+                <div class="modal-body">
+                    <!-- Panel de Selección -->
+                    <div class="selection-panel-modal">
+                        <div class="patient-info">
+                            <div class="info-row">
+                                <label class="info-field">
+                                    <span>Nombre del Paciente:</span>
+                                    <input type="text" id="patientName" placeholder="Ej: Juan Pérez">
+                                </label>
+                                <label class="info-field">
+                                    <span>Fecha de Ingreso:</span>
+                                    <input type="date" id="fechaIngreso">
+                                </label>
+                            </div>
+                            <label class="info-field">
+                                <span>Diagnóstico:</span>
+                                <input type="text" id="diagnostico" placeholder="Ej: Sepsis severa, IAM, EPOC descompensado">
+                            </label>
+                            <label class="info-field">
+                                <span>Observaciones:</span>
+                                <textarea id="observaciones" placeholder="Notas adicionales, alergias, evolución..." rows="3"></textarea>
+                            </label>
+                        </div>
+
+                        <h3>Seleccione las Intervenciones del Paciente</h3>
+                        
+                        <!-- Tabs de Categorías -->
+                        <div class="tabs-container">
+                            <div class="tabs-navigation">
+                                <button class="tab-btn active" data-tab="basicas">Actividades Básicas</button>
+                                <button class="tab-btn" data-tab="ventilatorio">Soporte Ventilatorio</button>
+                                <button class="tab-btn" data-tab="renal">Soporte Renal</button>
+                                <button class="tab-btn" data-tab="neurologico">Soporte Neurológico</button>
+                                <button class="tab-btn" data-tab="metabolico">Soporte Metabólico</button>
+                                <button class="tab-btn" data-tab="cardiovascular">Soporte Cardiovascular</button>
+                                <button class="tab-btn" data-tab="intervenciones">Intervenciones Específicas</button>
+                            </div>
+                            
+                            <div class="tabs-content">
+                                <!-- Actividades Básicas -->                                <div class="tab-panel active" data-tab="basicas">
+                                    <h4 class="tab-panel-title">Actividades Básicas</h4>
+                                    <div class="items-vertical">
+                                        <label class="item">
+                                            <input type="checkbox" data-points="5" data-category="basicas">
+                                            <span class="item-text">Monitorización estándar (constantes horarias, registro y cálculo de balance de líquidos)</span>
+                                            <span class="points">5 pts</span>
+                                        </label>
+                                        <label class="item">
+                                            <input type="checkbox" data-points="3" data-category="basicas">
+                                            <span class="item-text">Múltiples medicamentos intravenosos</span>
+                                            <span class="points">3 pts</span>
+                                        </label>
+                                        <label class="item">
+                                            <input type="checkbox" data-points="3" data-category="basicas">
+                                            <span class="item-text">Cuidados de drenajes excepto SNG</span>
+                                            <span class="points">3 pts</span>
+                                        </label>
+                                        <label class="item">
+                                            <input type="checkbox" data-points="2" data-category="basicas">
+                                            <span class="item-text">Medicación única (EV, VO o IM, SC, o por SNG)</span>
+                                            <span class="points">2 pts</span>
+                                        </label>
+                                        <label class="item">
+                                            <input type="checkbox" data-points="1" data-category="basicas">
+                                            <span class="item-text">Cambio de ropa frecuentes (al menos una vez cada turno)</span>
+                                            <span class="points">1 pt</span>
+                                        </label>
+                                        <label class="item">
+                                            <input type="checkbox" data-points="1" data-category="basicas">
+                                            <span class="item-text">Laboratorios, determinaciones bioquímicas y microbiológicas</span>
+                                            <span class="points">1 pt</span>
+                                        </label>
+                                        <label class="item">
+                                            <input type="checkbox" data-points="1" data-category="basicas">
+                                            <span class="item-text">Cambio de ropa de rutina. Cuidados y prevención de LPP</span>
+                                            <span class="points">1 pt</span>
+                                        </label>
+                                    </div>
+                                </div>
+                                
+                                <!-- Soporte Ventilatorio -->
+                                <div class="tab-panel" data-tab="ventilatorio">
+                                    <h4 class="tab-panel-title">Soporte Ventilatorio</h4>
+                                    <div class="items-vertical">
+                                        <label class="item">
+                                            <input type="checkbox" data-points="5" data-category="ventilatorio">
+                                            <span class="item-text">Soporte ventilatorio (con o sin PEEP, con o sin relajante muscular)</span>
+                                            <span class="points">5 pts</span>
+                                        </label>
+                                        <label class="item">
+                                            <input type="checkbox" data-points="2" data-category="ventilatorio">
+                                            <span class="item-text">Ventilación suplementaria (respiración espontánea a través de tubo traqueal sin PEEP, oxígeno suplementario)</span>
+                                            <span class="points">2 pts</span>
+                                        </label>
+                                        <label class="item">
+                                            <input type="checkbox" data-points="1" data-category="ventilatorio">
+                                            <span class="item-text">Cuidado de la vía aérea artificial</span>
+                                            <span class="points">1 pt</span>
+                                        </label>
+                                        <label class="item">
+                                            <input type="checkbox" data-points="1" data-category="ventilatorio">
+                                            <span class="item-text">Tratamiento para mejorar la función pulmonar</span>
+                                            <span class="points">1 pt</span>
+                                        </label>
+                                    </div>
+                                </div>
+                                
+                                <!-- Soporte Renal -->
+                                <div class="tab-panel" data-tab="renal">
+                                    <h4 class="tab-panel-title">Soporte Renal</h4>
+                                    <div class="items-vertical">
+                                        <label class="item">
+                                            <input type="checkbox" data-points="3" data-category="renal">
+                                            <span class="item-text">Técnicas de hemofiltración</span>
+                                            <span class="points">3 pts</span>
+                                        </label>
+                                        <label class="item">
+                                            <input type="checkbox" data-points="3" data-category="renal">
+                                            <span class="item-text">Diuresis activa (furosemida > 0,5 ml/kg/d)</span>
+                                            <span class="points">3 pts</span>
+                                        </label>
+                                        <label class="item">
+                                            <input type="checkbox" data-points="2" data-category="renal">
+                                            <span class="item-text">Medicación cuantitativa de la diuresis</span>
+                                            <span class="points">2 pts</span>
+                                        </label>
+                                    </div>
+                                </div>
+                                
+                                <!-- Soporte Neurológico -->
+                                <div class="tab-panel" data-tab="neurologico">
+                                    <h4 class="tab-panel-title">Soporte Neurológico</h4>
+                                    <div class="items-vertical">
+                                        <label class="item">
+                                            <input type="checkbox" data-points="4" data-category="neurologico">
+                                            <span class="item-text">Medición de la presión intracraneal</span>
+                                            <span class="points">4 pts</span>
+                                        </label>
+                                    </div>
+                                </div>
+                                
+                                <!-- Soporte Metabólico -->
+                                <div class="tab-panel" data-tab="metabolico">
+                                    <h4 class="tab-panel-title">Soporte Metabólico</h4>
+                                    <div class="items-vertical">
+                                        <label class="item">
+                                            <input type="checkbox" data-points="4" data-category="metabolico">
+                                            <span class="item-text">Tratamiento de acidosis o alcalosis metabólica complicada</span>
+                                            <span class="points">4 pts</span>
+                                        </label>
+                                        <label class="item">
+                                            <input type="checkbox" data-points="3" data-category="metabolico">
+                                            <span class="item-text">Alimentación parenteral</span>
+                                            <span class="points">3 pts</span>
+                                        </label>
+                                        <label class="item">
+                                            <input type="checkbox" data-points="2" data-category="metabolico">
+                                            <span class="item-text">Alimentación enteral a través de SNG o cualquier otra sonda gastro</span>
+                                            <span class="points">2 pts</span>
+                                        </label>
+                                    </div>
+                                </div>
+                                
+                                <!-- Soporte Cardiovascular -->
+                                <div class="tab-panel" data-tab="cardiovascular">
+                                    <h4 class="tab-panel-title">Soporte Cardiovascular</h4>
+                                    <div class="items-vertical">
+                                        <label class="item">
+                                            <input type="checkbox" data-points="8" data-category="cardiovascular">
+                                            <span class="item-text">Swan Ganz</span>
+                                            <span class="points">8 pts</span>
+                                        </label>
+                                        <label class="item">
+                                            <input type="checkbox" data-points="5" data-category="cardiovascular">
+                                            <span class="item-text">TAM (Tensión Arterial Media)</span>
+                                            <span class="points">5 pts</span>
+                                        </label>
+                                        <label class="item">
+                                            <input type="checkbox" data-points="4" data-category="cardiovascular">
+                                            <span class="item-text">Múltiples fármacos vasoactivos</span>
+                                            <span class="points">4 pts</span>
+                                        </label>
+                                        <label class="item">
+                                            <input type="checkbox" data-points="3" data-category="cardiovascular">
+                                            <span class="item-text">Un solo fármaco vasoactivo</span>
+                                            <span class="points">3 pts</span>
+                                        </label>
+                                        <label class="item">
+                                            <input type="checkbox" data-points="4" data-category="cardiovascular">
+                                            <span class="item-text">Reemplazo intravenoso de grandes cantidades de líquidos (> 3 L/m² por día)</span>
+                                            <span class="points">4 pts</span>
+                                        </label>
+                                        <label class="item">
+                                            <input type="checkbox" data-points="3" data-category="cardiovascular">
+                                            <span class="item-text">RCP en las últimas 24 hs</span>
+                                            <span class="points">3 pts</span>
+                                        </label>
+                                        <label class="item">
+                                            <input type="checkbox" data-points="2" data-category="cardiovascular">
+                                            <span class="item-text">Catéter venoso central</span>
+                                            <span class="points">2 pts</span>
+                                        </label>
+                                    </div>
+                                </div>
+                                
+                                <!-- Intervenciones Específicas -->
+                                <div class="tab-panel" data-tab="intervenciones">
+                                    <h4 class="tab-panel-title">Intervenciones Específicas</h4>
+                                    <div class="items-vertical">
+                                        <label class="item">
+                                            <input type="checkbox" data-points="3" data-category="intervenciones">
+                                            <span class="item-text">Intubación, introducción de MCP, cardioversión, endoscopías, cirugía de urgencias, lavado gástrico, RX, ecocardiogramas</span>
+                                            <span class="points">3 pts</span>
+                                        </label>
+                                        <label class="item">
+                                            <input type="checkbox" data-points="5" data-category="intervenciones">
+                                            <span class="item-text">Múltiples intervenciones en UTI (que no se describen)</span>
+                                            <span class="points">5 pts</span>
+                                        </label>
+                                        <label class="item">
+                                            <input type="checkbox" data-points="5" data-category="intervenciones">
+                                            <span class="item-text">Intervenciones fuera de la UTI (cirugía, procedimientos, traslados a hospitales)</span>
+                                            <span class="points">5 pts</span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Panel de Resultados del Modal -->
+                    <div class="results-panel-modal" id="resultsPanel">
+                        <h3>Resultado TISS</h3>
+                        
+                        <div class="score-display-modal" id="scoreDisplay">
+                            <div class="score-number" id="scoreNumber">0</div>
+                            <div class="score-label">Puntos TISS</div>
+                        </div>
+
+                        <div class="classification-modal" id="classification">
+                            <p style="text-align: center; color: #6b7280;">Seleccione intervenciones para ver la clasificación</p>
+                        </div>
+                        
+                        <div class="action-buttons-modal">
+                            <button id="guardarPacienteBtn" class="btn-primary">💾 Guardar</button>
+                            <button id="liberarCamaBtn" class="btn-danger">🗑️ Liberar</button>
+                            <button id="cancelarBtn" class="btn-secondary">Cancelar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>Sistema TISS - Therapeutic Intervention Scoring System | UTI 22 Camas</p>
+            <p class="footer-note">Herramienta de apoyo informativo. No sustituye el criterio profesional.</p>
+        </footer>
+    </div>
+
+    <!-- Modal Lista de Pacientes -->
+    <div class="modal" id="listaModal">
+        <div class="modal-content modal-lista">
+            <div class="modal-header">
+                <h2>📋 Lista de Pacientes - <span id="listaTurno"></span></h2>
+                <button class="close-btn" id="closeListaModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="listaContenido"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
