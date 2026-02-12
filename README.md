@@ -1,338 +1,157 @@
-# 🏥 Calculadora TISS - Sistema de Gestión
+# 🏥 TISS Web – Sistema de Gestión para UTI
 
-## 📋 Descripción
+## 📌 Overview
 
-Aplicación web completa para la gestión de pacientes en unidades de terapia intensiva, utilizando el sistema TISS (Therapeutic Intervention Scoring System) para calcular puntuaciones, clasificar pacientes y proporcionar información de referencia sobre necesidades de enfermería.
+Aplicación web desarrollada para digitalizar y estructurar el uso del sistema **TISS** (Therapeutic Intervention Scoring System) en unidades de terapia intensiva.
 
-## ⚠️ IMPORTANTE - Herramienta Informativa
+### El sistema permite:
 
-**Esta aplicación NO toma decisiones operativas.**
+- Registrar intervenciones clínicas
+- Calcular automáticamente puntajes TISS
+- Clasificar pacientes según complejidad asistencial
+- Visualizar estado global del servicio
+- Generar reportes imprimibles por turno
 
-- ❌ NO decide dotación de personal
-- ❌ NO recomienda recortes o ajustes
-- ❌ NO define staffing final
-- ✅ Proporciona datos referenciales
-- ✅ TISS es una variable descriptiva
-- ✅ **Las decisiones finales corresponden exclusivamente a jefatura de enfermería y dirección médica**
-
----
-
-## 🎯 Funcionalidades Principales
-
-### 1. **Mapa Visual**
-
-Visualización en tiempo real del estado de todas las camas de la UTI con código de colores según clasificación TISS.
-
-![Mapa de Camas]()
-*Agregar imagen del mapa de camas aquí*
-
-**Características:**
-- 🟢 **Verde** - Clase I (< 10 pts): Paciente estable
-- 🔵 **Azul** - Clase II (10-19 pts): Vigilancia activa
-- 🟠 **Naranja** - Clase III (20-39 pts): Inestable
-- 🔴 **Rojo** - Clase IV (≥ 40 pts): Gran inestabilidad
-- ⚪ **Gris** - Cama disponible
-- Muestra nombre del paciente en lugar de "Ocupada"
-- Indicador de días de internación
+Diseñada como herramienta de apoyo informativo para la planificación clínica.
 
 ---
 
-### 2. **Gestión Individual de Pacientes**
+## 🎯 Problema que resuelve
 
-Modal completo para registrar y editar información de cada paciente.
+En entornos de UTI, el cálculo manual del TISS:
 
-![Modal de Paciente]()
-*Agregar imagen del modal de edición aquí*
+- ❌ Consume tiempo
+- ❌ No siempre queda sistematizado
+- ❌ Dificulta la visualización global del servicio
+- ❌ No deja trazabilidad estructurada por turno
 
-**Información registrada:**
-- 👤 Nombre del paciente
-- 📅 Fecha de ingreso (calcula días automáticamente)
-- 🩺 Diagnóstico
-- 📝 Observaciones adicionales
-- ✅ Intervenciones TISS seleccionadas
-
-**Intervenciones organizadas en 7 categorías:**
-1. **Básicas** - Monitorización, vías, medicación
-2. **Ventilatorio** - Ventilación mecánica, oxigenoterapia
-3. **Renal** - Diálisis, técnicas de reemplazo renal
-4. **Neurológico** - Monitoreo PIC, sedación
-5. **Metabólico** - Nutrición parenteral, corrección metabólica
-6. **Cardiovascular** - Drogas vasoactivas, monitoreo hemodinámico
-7. **Intervenciones** - Procedimientos especiales, traslados
+✅ La aplicación transforma un sistema descriptivo en una herramienta digital estructurada, clara y visual.
 
 ---
 
-### 3. **Cálculo Automático TISS**
+## 🧠 Decisiones de Diseño
 
-Puntuación en tiempo real mientras seleccionas intervenciones.
+### 1️⃣ Aplicación 100% client-side
 
-![Resultado TISS]()
-*Agregar imagen del panel de resultados aquí*
+- No requiere servidor
+- Funciona offline
+- Persistencia mediante LocalStorage
+- Garantiza que los datos permanezcan en el dispositivo
 
-**Muestra:**
-- Puntaje total
-- Clasificación según rango
-- Ratio enfermero:paciente referencial
-- Descripción de la clase
+**Motivo:** priorizar simplicidad, portabilidad y privacidad.
 
----
+### 2️⃣ Separación explícita entre datos y decisiones
 
-### 4. **Gestión por Turnos**
+**El sistema:**
+- Calcula puntajes
+- Clasifica según reglas definidas
+- Muestra ratios referenciales
 
-Selector de turno para organizar la información por horarios.
+**Pero:**
+- ❌ No toma decisiones operativas
+- ❌ No recomienda ajustes de personal
+- ❌ No automatiza asignaciones
 
-![Selector de Turno]()
-*Agregar imagen del selector aquí*
+Se implementó deliberadamente esta limitación para evitar uso indebido como herramienta de gestión automática.
 
-**Turnos disponibles:**
-- 🌅 **Mañana** (7-14hs)
-- ☀️ **Tarde** (14-21hs)
-- 🌙 **Noche** (21-07hs)
-- ⏰ **Franquero** (7-21hs)
+### 3️⃣ Lógica estructurada por categorías clínicas
 
-El turno seleccionado se guarda automáticamente.
+Las intervenciones TISS están organizadas en **7 grupos:**
 
----
+1. Básicas
+2. Ventilatorio
+3. Renal
+4. Neurológico
+5. Metabólico
+6. Cardiovascular
+7. Procedimientos
 
-### 5. **Registro de Enfermeros en Turno**
+Cada selección actualiza el puntaje en tiempo real mediante lógica modular.
 
-Input para registrar cuántos enfermeros hay en el turno actual.
+### 4️⃣ Visualización centrada en flujo real de trabajo
 
-![Enfermeros en Turno]()
-*Agregar imagen del input aquí*
+- Mapa de camas con código de colores
+- Indicador de días de internación automático
+- Selector de turnos persistente
+- Panel resumen global
+- Vista optimizada para impresión
 
-**Características:**
-- Comparación visual: Enfermeros Disponibles / Necesarios (Estimado)
-- ⚠️ Alerta solo cuando faltan enfermeros (no sugiere reducir personal)
-- Protege al equipo de reasignaciones innecesarias
-
----
-
-### 6. **Notas del Turno**
-
-Campo de texto para observaciones generales del servicio.
-
-![Notas del Turno]()
-*Agregar imagen del campo de notas aquí*
-
-**Usos:**
-- Situaciones especiales
-- Cambios importantes
-- Incidentes relevantes
-- Observaciones para próximo turno
-
-Se guarda automáticamente en cada cambio.
+La interfaz fue pensada para uso en rondas y cambios de turno.
 
 ---
 
-### 7. **Resumen Global**
+## 🏗️ Arquitectura
 
-Panel con estadísticas generales de la UTI.
+Frontend puro sin dependencias externas:
 
-![Resumen Global]()
-*Agregar imagen del resumen aquí*
+- **HTML5**
+- **CSS3** responsive
+- **JavaScript** Vanilla
+- **LocalStorage** para persistencia
+- Cálculos ejecutados completamente en cliente
 
-**Indicadores:**
-- 🛏️ Camas ocupadas / Total
-- 📊 TISS Total acumulado
-- 👩‍⚕️ Enfermeros: En turno / Necesarios
-- 📈 TISS Promedio
-- Contadores por clase (I, II, III, IV)
+No utiliza frameworks ni librerías externas.
 
 ---
 
-### 8. **Lista de Pacientes**
+## 📊 Funcionalidades Principales
 
-Modal con vista detallada de todos los pacientes ingresados.
-
-![Lista de Pacientes]()
-*Agregar imagen de la lista aquí*
-
-**Incluye:**
-- Resumen del turno actual
-- Notas generales
-- Lista completa de pacientes con:
-  - Nombre y número de cama
-  - Puntaje TISS y clasificación
-  - Días de internación
-  - Diagnóstico
-  - Observaciones
+- ✅ Registro y edición de pacientes
+- ✅ Cálculo automático TISS en tiempo real
+- ✅ Clasificación por rangos (I–IV)
+- ✅ Resumen global del servicio
+- ✅ Gestión por turnos
+- ✅ Registro de enfermeros disponibles
+- ✅ Sistema de alertas visuales
+- ✅ Vista imprimible optimizada
+- ✅ Atajos de teclado
 
 ---
 
-### 9. **Impresión Optimizada**
+## 📱 Diseño Responsive
 
-Vista especialmente diseñada para impresión de reportes.
+Adaptación automática a:
 
-![Vista de Impresión]()
-*Agregar imagen de la vista de impresión aquí*
+- 💻 Desktop
+- 📱 Tablet
+- 📲 Mobile
 
-**Características:**
-- Oculta elementos innecesarios (botones, controles)
-- Optimiza layout para papel
-- Incluye todas las camas y resumen
-- Muestra notas del turno
-- Formato compacto y legible
+Interfaz optimizada para uso táctil.
 
 ---
 
-### 10. **Persistencia de Datos**
+## 🔒 Privacidad
 
-Todos los datos se guardan automáticamente en el navegador.
+- ✅ No requiere login
+- ✅ No envía datos a servidores
+- ✅ No utiliza APIs externas
+- ✅ Persistencia local
 
-**Se guarda:**
-- Estado de las camas
-- Información completa de pacientes
-- Turno seleccionado
-- Enfermeros en turno
-- Notas del turno
-
-**Nota:** Los datos persisten incluso al cerrar el navegador.
+Pensado para uso en entornos sensibles.
 
 ---
 
-## ⌨️ Atajos de Teclado
+## 📌 Limitaciones Intencionales
 
-| Atajo | Acción |
-|-------|--------|
-| `ESC` | Cerrar modales abiertos |
-| `Ctrl+Enter` | Guardar paciente (dentro del modal) |
-| `Ctrl+L` | Ver lista de pacientes |
-| `Ctrl+P` | Imprimir reporte |
+- ❌ No base de datos centralizada
+- ❌ No multiusuario
+- ❌ No control de versiones
+- ❌ No integración institucional
 
----
-
-## 📊 Clasificación TISS
-
-### Clase I (< 10 puntos)
-- **Descripción:** Paciente no necesita UTI
-- **Ratio:** 1:4 (1 Enfermero : 4 Pacientes)
-- **Color:** 🟢 Verde
-
-### Clase II (10-19 puntos)
-- **Descripción:** Vigilancia activa, paciente estable que requiere observación
-- **Ratio:** 1:4 (1 Enfermero : 4 Pacientes)
-- **Color:** 🔵 Azul
-
-### Clase III (20-39 puntos)
-- **Descripción:** Inestabilidad hemodinámica. Precisan monitorización y vigilancia intensiva
-- **Ratio:** 2:1 (2 Enfermeros : 1 Paciente)
-- **Color:** 🟠 Naranja
-
-### Clase IV (≥ 40 puntos)
-- **Descripción:** Gran inestabilidad hemodinámica que requiere cuidados intensivos
-- **Ratio:** 1:1 o 2:1 (1-2 Enfermeros : 1 Paciente)
-- **Color:** 🔴 Rojo
+Estas limitaciones fueron definidas para mantener la herramienta como **apoyo informativo** y no como sistema de gestión formal.
 
 ---
 
-## 🚀 Cómo Usar
+## 🚀 Posibles Extensiones Futuras
 
-### Inicio Rápido
-2. Seleccionar el turno actual
-3. Registrar número de enfermeros disponibles
-4. Hacer clic en una cama para agregar/editar paciente
-
-### Agregar un Paciente
-1. Clic en cama vacía o paciente existente
-2. Completar información del paciente
-3. Seleccionar intervenciones TISS aplicables
-4. Ver clasificación en tiempo real
-5. Clic en "💾 Guardar"
-
-### Ver Reporte
-1. Clic en "Ver Lista" para vista detallada
-2. Clic en "Imprimir" para reporte imprimible
-
-### Gestión de Turnos
-1. Cambiar turno en selector superior
-2. Ajustar enfermeros disponibles
-3. Agregar notas del turno si es necesario
+- 🔄 Backend con persistencia centralizada
+- 🔐 Autenticación por roles
+- 📄 Exportación a PDF estructurado
+- 📈 Dashboard histórico
+- 🔍 Auditoría de modificaciones
 
 ---
 
-## 📱 Responsive Design
+## 📎 Contexto Profesional
 
-La aplicación se adapta automáticamente a diferentes tamaños de pantalla:
-- 💻 **Desktop:** Vista completa con todos los elementos
-- 📱 **Tablet:** Layout optimizado
-- 📱 **Mobile:** Interfaz táctil adaptada
-
----
-
-## 🔒 Privacidad y Datos
-
-- ✅ Todos los datos se almacenan localmente en el navegador
-- ✅ No se envía información a ningún servidor
-- ✅ No requiere registro ni login
-- ✅ Los datos permanecen en el dispositivo
-- ⚠️ Limpiar caché del navegador eliminará los datos
-
----
-
-## 📞 Soporte
-
-Para reportar problemas o sugerencias, contactar con el equipo de desarrollo.
-
----
-
-## 📄 Licencia
-
-Herramienta de uso interno para apoyo en la gestión de UTI.
-
----
-
-**Versión:** 2.0  
-**Última actualización:** Febrero 2026  
-**Desarrollada para:** Gestión Camas
-
-
-## 🛠️ Tecnologías
-
-- HTML5
-- CSS3 (diseño responsive)
-- JavaScript vanilla (sin dependencias)
-
-## 🎨 Características de diseño
-
-- Gradientes modernos
-- Animaciones suaves
-- Código de colores por categoría
-- Scroll sticky para resultados
-- Interface intuitiva
-
-## ⚖️ Disclaimer Legal
-
-Esta herramienta es de carácter **informativo y educativo**. Los valores mostrados son referenciales según el sistema TISS estándar. 
-
-Las decisiones sobre dotación de personal deben considerar:
-- Contexto clínico específico
-- Recursos disponibles
-- Normativas locales
-- Criterio profesional del equipo de salud
-- Evaluación de jefatura de enfermería
-
-## 📝 Notas de desarrollo
-
-- Sin base de datos (aplicación estática)
-- No requiere instalación
-- Funciona offline una vez cargada
-- Todos los cálculos en cliente
-
-## 👥 Uso recomendado
-
-Esta aplicación está diseñada para:
-- Apoyo en rondas de evaluación
-- Estimación inicial de recursos
-- Fines educativos y formativos
-- Documentación orientativa
-
-**NO para**:
-- Toma de decisiones automáticas
-- Justificación de recortes de personal
-- Sustitución del criterio profesional
-
----
-
-**Versión:** 1.0  
-**Última actualización:** Febrero 2026
+Proyecto desarrollado como solución digital aplicada a entorno clínico real, con validación funcional a nivel de servicio.
