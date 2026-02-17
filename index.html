@@ -26,7 +26,7 @@
                     <select id="turnoSelect">
                         <option value="mañana">Mañana (7-14hs)</option>
                         <option value="tarde">Tarde (14-21hs)</option>
-                        <option value="noche">Nochede enfermería y dirección médica (21-07hs)</option>
+                        <option value="noche">Noche (21-07hs)</option>
                         <option value="franquero">Franquero (7-21hs)</option>
                     </select>
                 </div>
@@ -83,9 +83,9 @@
             <div class="section-header">
                 <h2>Mapa de Camas UTI</h2>
                 <div class="section-actions">
-                    <button id="verListaBtn" class="btn-primary-small">📋 Ver Lista</button>
-                    <button id="imprimirBtn" class="btn-primary-small">🖨️ Imprimir</button>
-                    <button id="limpiarTodoBtn" class="btn-secondary-small">🗑️ Limpiar Todo</button>
+                    <button id="verListaBtn" class="btn-primary-small" title="Ver lista detallada de todos los pacientes">📋 Ver Lista</button>
+                    <button id="imprimirBtn" class="btn-primary-small" title="Imprimir reporte del turno actual">🖨️ Imprimir</button>
+                    <button id="limpiarTodoBtn" class="btn-secondary-small" title="Liberar todas las camas (no se puede deshacer)">🗑️ Limpiar Todo</button>
                 </div>
             </div>
             
@@ -400,9 +400,9 @@
                         </div>
                         
                         <div class="action-buttons-modal">
-                            <button id="guardarPacienteBtn" class="btn-primary">💾 Guardar</button>
-                            <button id="liberarCamaBtn" class="btn-danger">🗑️ Liberar</button>
-                            <button id="cancelarBtn" class="btn-secondary">Cancelar</button>
+                            <button id="guardarPacienteBtn" class="btn-primary" title="Guardar paciente y cerrar (Ctrl+Enter)">💾 Guardar</button>
+                            <button id="liberarCamaBtn" class="btn-danger" title="Liberar esta cama y eliminar todos los datos del paciente">🗑️ Liberar</button>
+                            <button id="cancelarBtn" class="btn-secondary" title="Cancelar sin guardar cambios (Esc)">Cancelar</button>
                         </div>
                     </div>
                 </div>

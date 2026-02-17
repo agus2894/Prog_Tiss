@@ -45,6 +45,14 @@ let turnoActual = 'mañana';
 let enfermerosEnTurno = 0;
 let notasTurno = '';
 
+// Función utilitaria para calcular días internados
+function calcularDiasInternado(fechaIngreso) {
+    if (!fechaIngreso) return null;
+    const ingreso = new Date(fechaIngreso);
+    const hoy = new Date();
+    return Math.floor((hoy - ingreso) / (1000 * 60 * 60 * 24));
+}
+
 // Inicializar 22 camas
 function initializeBeds() {
     beds = Array.from({ length: 22 }, (_, i) => ({
@@ -117,10 +125,10 @@ function renderBedsGrid() {
             
             let diasInternado = '';
             if (bed.fechaIngreso) {
-                const ingreso = new Date(bed.fechaIngreso);
-                const hoy = new Date();
-                const dias = Math.floor((hoy - ingreso) / (1000 * 60 * 60 * 24));
-                diasInternado = `<div class="bed-dias">📅 ${dias} día${dias !== 1 ? 's' : ''}</div>`;
+                const dias = calcularDiasInternado(bed.fechaIngreso);
+                if (dias !== null) {
+                    diasInternado = `<div class="bed-dias">📅 ${dias} día${dias !== 1 ? 's' : ''}</div>`;
+                }
             }
             
             bedCard.innerHTML = `
@@ -188,6 +196,7 @@ function updateGlobalSummary() {
 }
 
 // Abrir modal
+// Abrir modal
 function openModal(bedIndex) {
     currentBedIndex = bedIndex;
     const bed = beds[bedIndex];
@@ -197,7 +206,13 @@ function openModal(bedIndex) {
     document.getElementById('patientName').value = bed.patientName || '';
     document.getElementById('diagnostico').value = bed.diagnostico || '';
     document.getElementById('observaciones').value = bed.observaciones || '';
-    document.getElementById('fechaIngreso').value = bed.fechaIngreso || '';
+    
+    // Si la cama está vacía, usar fecha actual por defecto
+    if (!bed.occupied && !bed.fechaIngreso) {
+        document.getElementById('fechaIngreso').value = new Date().toISOString().split('T')[0];
+    } else {
+        document.getElementById('fechaIngreso').value = bed.fechaIngreso || '';
+    }
     
     const checkboxes = document.querySelectorAll('.modal input[type="checkbox"]');
     checkboxes.forEach(checkbox => {
@@ -266,14 +281,46 @@ function guardarPaciente() {
     
     saveBeds();
     renderBedsGrid();
+    
+    // Feedback visual
+    mostrarFeedback('✓ Paciente guardado correctamente');
+    
     closeModal();
+}
+
+// Mostrar feedback visual temporal
+function mostrarFeedback(mensaje) {
+    const feedback = document.createElement('div');
+    feedback.textContent = mensaje;
+    feedback.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: #10b981;
+        color: white;
+        padding: 1rem 1.5rem;
+        border-radius: 8px;
+        font-weight: 600;
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        z-index: 10000;
+        animation: slideIn 0.3s ease-out;
+    `;
+    document.body.appendChild(feedback);
+    
+    setTimeout(() => {
+        feedback.style.animation = 'slideOut 0.3s ease-out';
+        setTimeout(() => feedback.remove(), 300);
+    }, 2000);
 }
 
 // Liberar cama
 function liberarCama() {
     if (currentBedIndex === null) return;
     
-    if (confirm(`¿Está seguro de liberar la Cama ${beds[currentBedIndex].number}?`)) {
+    const bed = beds[currentBedIndex];
+    const nombrePaciente = bed.patientName || 'este paciente';
+    
+    if (confirm(`¿Está seguro de liberar la Cama ${bed.number}${bed.patientName ? ` (${bed.patientName})` : ''}?\n\nEsta acción eliminará todos los datos y no se puede deshacer.`)) {
         beds[currentBedIndex] = {
             number: beds[currentBedIndex].number,
             occupied: false,
@@ -287,6 +334,7 @@ function liberarCama() {
         
         saveBeds();
         renderBedsGrid();
+        mostrarFeedback('✓ Cama liberada correctamente');
         closeModal();
     }
 }
@@ -330,10 +378,10 @@ function verLista() {
             const clase = clasificarPaciente(bed.tiss);
             let diasInternado = '';
             if (bed.fechaIngreso) {
-                const ingreso = new Date(bed.fechaIngreso);
-                const hoy = new Date();
-                const dias = Math.floor((hoy - ingreso) / (1000 * 60 * 60 * 24));
-                diasInternado = `${dias} día${dias !== 1 ? 's' : ''}`;
+                const dias = calcularDiasInternado(bed.fechaIngreso);
+                if (dias !== null) {
+                    diasInternado = `${dias} día${dias !== 1 ? 's' : ''}`;
+                }
             }
             
             html += `<div class="lista-paciente-card ${clase.className}">`;
@@ -407,7 +455,13 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     
     document.getElementById('enfermerosEnTurno').addEventListener('input', function(e) {
-        enfermerosEnTurno = parseInt(e.target.value) || 0;
+        let valor = parseInt(e.target.value) || 0;
+        // Evitar valores negativos
+        if (valor < 0) {
+            valor = 0;
+            e.target.value = 0;
+        }
+        enfermerosEnTurno = valor;
         saveBeds();
         updateGlobalSummary();
     });
