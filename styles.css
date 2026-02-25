@@ -817,6 +817,13 @@ header h1 {
 
 .action-buttons-modal button {
     width: 100%;
+    padding: 0.875rem 1.5rem;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: none;
 }
 
 .btn-danger {
@@ -984,15 +991,13 @@ header h1 {
 
 .btn-primary, .btn-secondary {
     flex: 1;
-    padding: 1rem 2rem;
+    padding: 0.875rem 1.5rem;
     border: none;
     border-radius: 8px;
-    font-size: 1rem;
+    font-size: 0.95rem;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
 }
 
 .btn-primary {
@@ -1015,6 +1020,7 @@ header h1 {
 .btn-secondary:hover {
     background: #e5e7eb;
     border-color: var(--text-light);
+    transform: translateY(-2px);
 }
 
 /* Results Panel */
