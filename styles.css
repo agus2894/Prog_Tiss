@@ -1299,6 +1299,7 @@ footer p {
     body {
         background: white;
         padding: 0;
+        margin: 0;
     }
     
     .disclaimer-header,
@@ -1313,53 +1314,144 @@ footer p {
         display: none !important;
     }
     
+    .section-header {
+        margin-bottom: 0.5rem;
+    }
+    
+    .section-header h2 {
+        font-size: 1rem;
+        margin: 0;
+    }
+    
     header {
         background: white !important;
         color: black !important;
-        padding: 1rem 0;
+        padding: 0.5rem 1rem !important;
+        margin-bottom: 0.5rem !important;
     }
     
     header h1 {
         color: black;
-        font-size: 1.5rem;
+        font-size: 1.2rem;
+        margin: 0;
     }
     
     .container {
         box-shadow: none;
         max-width: 100%;
+        padding: 0.5rem;
     }
     
     .global-summary {
         page-break-inside: avoid;
+        margin-bottom: 0.75rem;
+        gap: 0.5rem;
     }
     
     .summary-card {
         border: 1px solid #ddd;
+        padding: 0.5rem !important;
+    }
+    
+    .summary-icon {
+        font-size: 1.25rem !important;
+    }
+    
+    .summary-value {
+        font-size: 1.25rem !important;
+    }
+    
+    .summary-label {
+        font-size: 0.7rem !important;
+    }
+    
+    .summary-info {
+        font-size: 0.65rem !important;
     }
     
     .notas-turno-section {
         page-break-inside: avoid;
         border: 1px solid #ddd;
+        margin-bottom: 0.75rem;
+        padding: 0.5rem;
+    }
+    
+    .notas-turno-section label {
+        font-size: 0.85rem;
+        margin-bottom: 0.25rem;
     }
     
     .notas-turno-section textarea {
         border: none;
-        padding: 0.5rem;
+        padding: 0.25rem;
         min-height: auto;
+        font-size: 0.75rem;
+        height: auto;
+        max-height: 3rem;
+        overflow: hidden;
+    }
+    
+    .beds-section {
+        margin-bottom: 0.5rem;
     }
     
     .beds-grid {
         grid-template-columns: repeat(6, 1fr);
-        gap: 0.5rem;
+        gap: 0.35rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    /* Salto de página después de la cama 10 */
+    .bed-card:nth-child(10) {
+        page-break-after: always;
     }
     
     .bed-card {
+        font-size: 0.65rem;
+        padding: 0.35rem;
+        page-break-inside: avoid;
+    }
+    
+    .bed-number {
         font-size: 0.75rem;
-        padding: 0.5rem;
+    }
+    
+    .bed-icon {
+        font-size: 1rem;
+    }
+    
+    .bed-tiss {
+        font-size: 0.7rem;
+    }
+    
+    .bed-dias {
+        font-size: 0.6rem;
     }
     
     .legend {
         page-break-before: avoid;
+        margin-top: 0.5rem;
+        padding: 0.5rem;
+        gap: 0.5rem;
+    }
+    
+    .legend-item {
+        font-size: 0.7rem;
+    }
+    
+    .legend-color {
+        width: 12px;
+        height: 12px;
+    }
+    
+    footer {
+        padding: 0.5rem;
+        margin-top: 0.5rem;
+    }
+    
+    footer p {
+        font-size: 0.7rem;
+        margin: 0.1rem 0;
     }
 }
 
