@@ -22,7 +22,7 @@ const clasificaciones = {
         nombre: "Clase III",
         rango: "20-39 puntos",
         descripcion: "Inestabilidad hemodinámica. Precisan monitorización (invasiva o no) y vigilancia intensiva.",
-        ratio: 2,
+        ratio: 0.5,
         ratioTexto: "2:1",
         color: "class-3",
         className: "clase3"
@@ -31,8 +31,8 @@ const clasificaciones = {
         nombre: "Clase IV",
         rango: "≥ 40 puntos",
         descripcion: "Gran inestabilidad hemodinámica que requiere cuidados médicos y de enfermería intensiva.",
-        ratio: 1.5,
-        ratioTexto: "1:1 o 2:1",
+        ratio: 1,
+        ratioTexto: "1:1",
         color: "class-4",
         className: "clase4"
     }

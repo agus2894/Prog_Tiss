@@ -157,30 +157,32 @@
                 </div>
                 
                 <div class="modal-body">
-                    <!-- Panel de Selección -->
-                    <div class="selection-panel-modal">
+                    <!-- Columna 1: Información del Paciente -->
+                    <div class="patient-info-panel">
+                        <h3>📋 Datos del Paciente</h3>
                         <div class="patient-info">
-                            <div class="info-row">
-                                <label class="info-field">
-                                    <span>Nombre del Paciente:</span>
-                                    <input type="text" id="patientName" placeholder="Ej: Juan Pérez">
-                                </label>
-                                <label class="info-field">
-                                    <span>Fecha de Ingreso:</span>
-                                    <input type="date" id="fechaIngreso">
-                                </label>
-                            </div>
+                            <label class="info-field">
+                                <span>Nombre del Paciente:</span>
+                                <input type="text" id="patientName" placeholder="Ej: Juan Pérez">
+                            </label>
+                            <label class="info-field">
+                                <span>Fecha de Ingreso:</span>
+                                <input type="date" id="fechaIngreso">
+                            </label>
                             <label class="info-field">
                                 <span>Diagnóstico:</span>
-                                <input type="text" id="diagnostico" placeholder="Ej: Sepsis severa, IAM, EPOC descompensado">
+                                <textarea id="diagnostico" placeholder="Ej: Sepsis severa, IAM, EPOC descompensado" rows="3"></textarea>
                             </label>
                             <label class="info-field">
                                 <span>Observaciones:</span>
-                                <textarea id="observaciones" placeholder="Notas adicionales, alergias, evolución..." rows="3"></textarea>
+                                <textarea id="observaciones" placeholder="Notas adicionales, alergias, evolución..." rows="6"></textarea>
                             </label>
                         </div>
+                    </div>
 
-                        <h3>Seleccione las Intervenciones del Paciente</h3>
+                    <!-- Columna 2: Selección de Intervenciones TISS -->
+                    <div class="selection-panel-modal">
+                        <h3>🏥 Intervenciones TISS</h3>
                         
                         <!-- Tabs de Categorías -->
                         <div class="tabs-container">
