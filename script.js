@@ -196,7 +196,6 @@ function updateGlobalSummary() {
 }
 
 // Abrir modal
-// Abrir modal
 function openModal(bedIndex) {
     currentBedIndex = bedIndex;
     const bed = beds[bedIndex];
@@ -214,10 +213,22 @@ function openModal(bedIndex) {
         document.getElementById('fechaIngreso').value = bed.fechaIngreso || '';
     }
     
+    // SIEMPRE desmarcar todos los checkboxes primero
     const checkboxes = document.querySelectorAll('.modal input[type="checkbox"]');
     checkboxes.forEach(checkbox => {
-        checkbox.checked = bed.selectedInterventions.includes(checkbox.dataset.points + '-' + checkbox.dataset.category);
+        checkbox.checked = false;
     });
+    
+    // Si la cama está OCUPADA (paciente existente), marcar las intervenciones guardadas
+    if (bed.occupied && bed.selectedInterventions && bed.selectedInterventions.length > 0) {
+        checkboxes.forEach(checkbox => {
+            const key = checkbox.dataset.points + '-' + checkbox.dataset.category;
+            if (bed.selectedInterventions.includes(key)) {
+                checkbox.checked = true;
+            }
+        });
+    }
+    // Si la cama está VACÍA (nuevo paciente), todos los checkboxes quedan desmarcados
     
     updateModalResults();
     modal.classList.add('active');
@@ -225,7 +236,15 @@ function openModal(bedIndex) {
 
 // Cerrar modal
 function closeModal() {
-    document.getElementById('patientModal').classList.remove('active');
+    const modal = document.getElementById('patientModal');
+    modal.classList.remove('active');
+    
+    // Limpiar todos los checkboxes al cerrar para evitar residuos
+    const checkboxes = document.querySelectorAll('.modal input[type="checkbox"]');
+    checkboxes.forEach(checkbox => {
+        checkbox.checked = false;
+    });
+    
     currentBedIndex = null;
 }
 
@@ -520,11 +539,6 @@ document.addEventListener('DOMContentLoaded', function() {
         if (e.ctrlKey && e.key === 'l' && !modalAbierto && !listaAbierta) {
             e.preventDefault();
             verLista();
-        }
-        
-        // CTRL+P para imprimir (ya lo maneja el navegador, pero agregamos confirmación visual)
-        if (e.ctrlKey && e.key === 'p') {
-            // El navegador maneja esto automáticamente
         }
     });
 });
