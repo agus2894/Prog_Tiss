@@ -188,11 +188,6 @@ function updateGlobalSummary() {
         else if (bed.tiss < 40) counts.clase3++;
         else counts.clase4++;
     });
-    
-    document.getElementById('countClase1').textContent = counts.clase1;
-    document.getElementById('countClase2').textContent = counts.clase2;
-    document.getElementById('countClase3').textContent = counts.clase3;
-    document.getElementById('countClase4').textContent = counts.clase4;
 }
 
 // Abrir modal
@@ -358,82 +353,6 @@ function liberarCama() {
     }
 }
 
-// Ver lista de pacientes
-function verLista() {
-    const modal = document.getElementById('listaModal');
-    const contenido = document.getElementById('listaContenido');
-    const turnoNombre = {
-        'mañana': 'Mañana (7-14hs)',
-        'tarde': 'Tarde (14-21hs)',
-        'noche': 'Noche (21-07hs)',
-        'franquero': 'Franquero (7-21hs)'
-    };
-    
-    document.getElementById('listaTurno').textContent = turnoNombre[turnoActual];
-    
-    const occupied = beds.filter(b => b.occupied);
-    
-    if (occupied.length === 0) {
-        contenido.innerHTML = '<div class="lista-vacia">📋 No hay pacientes registrados</div>';
-    } else {
-        let html = '<div class="lista-resumen">';
-        html += '<h3>Resumen del Turno</h3>';
-        html += '<div class="lista-resumen-grid">';
-        html += `<div class="lista-resumen-item"><div class="lista-resumen-valor">${occupied.length}</div><div class="lista-resumen-label">Pacientes</div></div>`;
-        html += `<div class="lista-resumen-item"><div class="lista-resumen-valor">${enfermerosEnTurno}</div><div class="lista-resumen-label">Enfermeros</div></div>`;
-        
-        const tissTotal = occupied.reduce((sum, b) => sum + b.tiss, 0);
-        html += `<div class="lista-resumen-item"><div class="lista-resumen-valor">${tissTotal}</div><div class="lista-resumen-label">TISS Total</div></div>`;
-        html += '</div>';
-        
-        if (notasTurno) {
-            html += `<div style="margin-top: 1rem;"><strong>Notas:</strong> ${notasTurno}</div>`;
-        }
-        html += '</div>';
-        
-        html += '<div class="lista-pacientes">';
-        
-        occupied.forEach(bed => {
-            const clase = clasificarPaciente(bed.tiss);
-            let diasInternado = '';
-            if (bed.fechaIngreso) {
-                const dias = calcularDiasInternado(bed.fechaIngreso);
-                if (dias !== null) {
-                    diasInternado = `${dias} día${dias !== 1 ? 's' : ''}`;
-                }
-            }
-            
-            html += `<div class="lista-paciente-card ${clase.className}">`;
-            html += '<div class="lista-paciente-header">';
-            html += `<div class="lista-paciente-nombre">${bed.patientName || 'Sin nombre'}</div>`;
-            html += `<div class="lista-paciente-cama">Cama ${bed.number}</div>`;
-            html += '</div>';
-            html += '<div class="lista-paciente-info">';
-            html += `<div class="lista-info-item"><strong>TISS:</strong> ${bed.tiss} pts (${clase.nombre})</div>`;
-            if (diasInternado) {
-                html += `<div class="lista-info-item"><strong>Internación:</strong> ${diasInternado}</div>`;
-            }
-            if (bed.diagnostico) {
-                html += `<div class="lista-info-item"><strong>Diagnóstico:</strong> ${bed.diagnostico}</div>`;
-            }
-            if (bed.observaciones) {
-                html += `<div class="lista-info-item" style="grid-column: 1 / -1;"><strong>Observaciones:</strong> ${bed.observaciones}</div>`;
-            }
-            html += '</div>';
-            html += '</div>';
-        });
-        
-        html += '</div>';
-        contenido.innerHTML = html;
-    }
-    
-    modal.classList.add('active');
-}
-
-function closeListaModal() {
-    document.getElementById('listaModal').classList.remove('active');
-}
-
 // Imprimir
 function imprimirReporte() {
     window.print();
@@ -490,13 +409,7 @@ document.addEventListener('DOMContentLoaded', function() {
         saveBeds();
     });
     
-    document.getElementById('verListaBtn').addEventListener('click', verLista);
     document.getElementById('imprimirBtn').addEventListener('click', imprimirReporte);
-    document.getElementById('closeListaModal').addEventListener('click', closeListaModal);
-    
-    document.getElementById('listaModal').addEventListener('click', function(e) {
-        if (e.target === this) closeListaModal();
-    });
     
     document.getElementById('patientModal').addEventListener('click', function(e) {
         if (e.target === this) closeModal();
@@ -518,27 +431,19 @@ document.addEventListener('DOMContentLoaded', function() {
         checkbox.addEventListener('change', updateModalResults);
     });
     
-    // Atajos de teclado mejorados
+    // Atajos de teclado
     document.addEventListener('keydown', function(e) {
         const modalAbierto = document.getElementById('patientModal').classList.contains('active');
-        const listaAbierta = document.getElementById('listaModal').classList.contains('active');
         
-        // ESC para cerrar modales
-        if (e.key === 'Escape') {
-            if (modalAbierto) closeModal();
-            if (listaAbierta) closeListaModal();
+        // ESC para cerrar modal
+        if (e.key === 'Escape' && modalAbierto) {
+            closeModal();
         }
         
         // CTRL+ENTER para guardar (solo en modal de paciente)
         if (e.ctrlKey && e.key === 'Enter' && modalAbierto) {
             e.preventDefault();
             guardarPaciente();
-        }
-        
-        // CTRL+L para ver lista (cuando no hay modales abiertos)
-        if (e.ctrlKey && e.key === 'l' && !modalAbierto && !listaAbierta) {
-            e.preventDefault();
-            verLista();
         }
     });
 });

@@ -13,11 +13,8 @@
     <div class="container">
         <!-- Disclaimer Principal -->
         <div class="disclaimer-header">
-            <div class="warning-icon">⚠️</div>
-            <div class="disclaimer-text">
-                <strong>HERRAMIENTA INFORMATIVA</strong>
-                <p>Esta aplicación NO toma decisiones operativas. Los datos mostrados son referenciales. Las decisiones finales sobre dotación de personal corresponden exclusivamente a la jefatura y coordinación de Enfermeria.</p>
-            </div>
+            <span class="warning-icon">⚠️</span>
+            <span><strong>HERRAMIENTA INFORMATIVA:</strong> No toma decisiones operativas. Los datos son referenciales.</span>
         </div>
 
         <header>
@@ -85,7 +82,6 @@
             <div class="section-header">
                 <h2>Mapa de Camas UTI</h2>
                 <div class="section-actions">
-                    <button id="verListaBtn" class="btn-primary-small" title="Ver lista detallada de todos los pacientes">📋 Ver Lista</button>
                     <button id="imprimirBtn" class="btn-primary-small" title="Imprimir reporte del turno actual">🖨️ Imprimir</button>
                     <button id="limpiarTodoBtn" class="btn-secondary-small" title="Liberar todas las camas (no se puede deshacer)">🗑️ Limpiar Todo</button>
                 </div>
@@ -119,36 +115,7 @@
             </div>
         </div>
 
-        <!-- Distribución por Clases -->
-        <div class="distribution-section">
-            <h2>Distribución de Pacientes por Clase</h2>
-            <div class="distribution-grid">
-                <div class="distribution-card class-1">
-                    <h3>Clase I</h3>
-                    <div class="distribution-count" id="countClase1">0</div>
-                    <p>< 10 puntos</p>
-                    <p class="ratio-text">Ratio: 1:4</p>
-                </div>
-                <div class="distribution-card class-2">
-                    <h3>Clase II</h3>
-                    <div class="distribution-count" id="countClase2">0</div>
-                    <p>10-19 puntos</p>
-                    <p class="ratio-text">Ratio: 1:4</p>
-                </div>
-                <div class="distribution-card class-3">
-                    <h3>Clase III</h3>
-                    <div class="distribution-count" id="countClase3">0</div>
-                    <p>20-39 puntos</p>
-                    <p class="ratio-text">Ratio: 2:1</p>
-                </div>
-                <div class="distribution-card class-4">
-                    <h3>Clase IV</h3>
-                    <div class="distribution-count" id="countClase4">0</div>
-                    <p>≥ 40 puntos</p>
-                    <p class="ratio-text">Ratio: 1:1</p>
-                </div>
-            </div>
-        </div>
+
 
         <!-- Modal para editar paciente -->
         <div id="patientModal" class="modal">
@@ -417,19 +384,6 @@
             <p>Sistema TISS - Therapeutic Intervention Scoring System | UTI </p>
             <p class="footer-note">Herramienta de apoyo informativo. No sustituye el criterio profesional.</p>
         </footer>
-    </div>
-
-    <!-- Modal Lista de Pacientes -->
-    <div class="modal" id="listaModal">
-        <div class="modal-content modal-lista">
-            <div class="modal-header">
-                <h2>📋 Lista de Pacientes - <span id="listaTurno"></span></h2>
-                <button class="close-btn" id="closeListaModal">&times;</button>
-            </div>
-            <div class="modal-body">
-                <div id="listaContenido"></div>
-            </div>
-        </div>
     </div>
 
     <script src="script.js"></script>
