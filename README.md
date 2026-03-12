@@ -1,6 +1,12 @@
 # 🏥 TISS Web – Sistema de Gestión para UTI
 
-## 📌 Overview
+## � Acceso Directo
+
+**[👉 Usar la aplicación aquí](https://agus2894.github.io/Prog_Tiss/)**
+
+---
+
+## �📌 Overview
 
 Aplicación web desarrollada para digitalizar y estructurar el uso del sistema **TISS** (Therapeutic Intervention Scoring System) en unidades de terapia intensiva.
 
