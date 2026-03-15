@@ -13,8 +13,8 @@ const clasificaciones = {
         nombre: "Clase II",
         rango: "10-19 puntos",
         descripcion: "Vigilancia activa. Paciente estable que requiere observación.",
-        ratio: 0.25,
-        ratioTexto: "1:4",
+        ratio: 0.33,
+        ratioTexto: "1:3",
         color: "class-2",
         className: "clase2"
     },
@@ -23,7 +23,7 @@ const clasificaciones = {
         rango: "20-39 puntos",
         descripcion: "Inestabilidad hemodinámica. Precisan monitorización (invasiva o no) y vigilancia intensiva.",
         ratio: 0.5,
-        ratioTexto: "2:1",
+        ratioTexto: "1:2",
         color: "class-3",
         className: "clase3"
     },
@@ -188,6 +188,19 @@ function updateGlobalSummary() {
         else if (bed.tiss < 40) counts.clase3++;
         else counts.clase4++;
     });
+    
+    // Mostrar distribución por clases
+    const distribucionDiv = document.getElementById('distribucionClases');
+    if (occupied.length > 0) {
+        const partes = [];
+        if (counts.clase1 > 0) partes.push(`I: ${counts.clase1}`);
+        if (counts.clase2 > 0) partes.push(`II: ${counts.clase2}`);
+        if (counts.clase3 > 0) partes.push(`III: ${counts.clase3}`);
+        if (counts.clase4 > 0) partes.push(`IV: ${counts.clase4}`);
+        distribucionDiv.textContent = partes.length > 0 ? `Distribución: ${partes.join(' | ')}` : '';
+    } else {
+        distribucionDiv.textContent = '';
+    }
 }
 
 // Abrir modal
