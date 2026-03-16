@@ -1473,17 +1473,66 @@ footer p {
         padding: 1rem;
         grid-template-columns: 1fr;
         overflow-y: auto;
-        overflow-x: hidden;
-        max-height: calc(100vh - 150px);
+        overflow-x: visible;
+        max-height: calc(100vh - 120px);
         -webkit-overflow-scrolling: touch;
+        display: flex;
+        flex-direction: column;
     }
     
-    .patient-info-panel,
-    .selection-panel-modal,
-    .results-panel-modal {
+    .patient-info-panel {
+        order: 1;
         max-height: none;
         position: relative;
         overflow: visible;
+    }
+    
+    .results-panel-modal {
+        order: 2;
+        position: sticky;
+        top: 0;
+        z-index: 60;
+        max-height: none;
+        margin-bottom: 1rem;
+        padding: 1rem;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+        background: var(--bg-light);
+    }
+    
+    .selection-panel-modal {
+        order: 3;
+        max-height: none;
+        position: relative;
+        overflow: visible;
+    }
+    
+    .results-panel-modal h3 {
+        font-size: 0.95rem;
+        margin-bottom: 0.75rem;
+    }
+    
+    .score-display-modal {
+        padding: 1rem;
+        margin-bottom: 0.75rem;
+    }
+    
+    .score-number {
+        font-size: 2rem;
+    }
+    
+    .classification-modal {
+        padding: 0.75rem;
+        font-size: 0.8rem;
+    }
+    
+    .classification-modal h3 {
+        font-size: 0.9rem;
+        margin-bottom: 0.25rem;
+    }
+    
+    .classification-modal p {
+        margin: 0.15rem 0;
+        font-size: 0.8rem;
     }
     
     /* Inputs y textareas más grandes en móvil */
@@ -1573,9 +1622,10 @@ footer p {
     
     .tabs-content {
         padding: 1rem;
-        min-height: 200px;
-        max-height: none;
-        overflow-y: visible;
+        min-height: 150px;
+        max-height: 400px;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
     }
     
     .tab-panel-title {
