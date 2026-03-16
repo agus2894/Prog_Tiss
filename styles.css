@@ -1470,7 +1470,7 @@ footer p {
     }
 
     .modal-body {
-        padding: 1rem;
+        padding: 0 0 180px 0;
         grid-template-columns: 1fr;
         overflow-y: auto;
         overflow-x: visible;
@@ -1485,18 +1485,98 @@ footer p {
         max-height: none;
         position: relative;
         overflow: visible;
+        padding: 0.75rem;
+        background: white;
+        margin-bottom: 0.5rem;
+    }
+    
+    .patient-info-panel h3 {
+        font-size: 0.95rem;
+        margin-bottom: 0.5rem;
+        padding-bottom: 0.5rem;
+    }
+    
+    .patient-info {
+        gap: 0.75rem;
+        padding: 0.75rem;
+    }
+    
+    .info-field span {
+        font-size: 0.8rem;
+        margin-bottom: 0.3rem;
+    }
+    
+    .info-field input,
+    .info-field textarea {
+        padding: 0.5rem;
+        font-size: 0.85rem;
+    }
+    
+    .info-field textarea {
+        min-height: 60px;
     }
     
     .results-panel-modal {
         order: 2;
         position: sticky;
         top: 0;
-        z-index: 60;
+        z-index: 150;
         max-height: none;
-        margin-bottom: 1rem;
-        padding: 1rem;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.15);
-        background: var(--bg-light);
+        margin: 0 0 0.5rem 0;
+        padding: 0.75rem;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        background: white;
+        border-bottom: 2px solid var(--primary-color);
+    }
+    
+    .results-panel-modal h3 {
+        display: none;
+    }
+    
+    .score-display-modal {
+        padding: 0.5rem 0.75rem;
+        margin-bottom: 0;
+        display: grid;
+        grid-template-columns: auto 1fr;
+        align-items: center;
+        gap: 1rem;
+    }
+    
+    .score-number {
+        font-size: 2rem;
+        margin-bottom: 0;
+        font-weight: 700;
+        line-height: 1;
+    }
+    
+    .score-label {
+        font-size: 0.7rem;
+        text-align: left;
+        line-height: 1.2;
+    }
+    
+    .classification-modal {
+        padding: 0.5rem 0.75rem;
+        font-size: 0.75rem;
+        margin-top: 0.5rem;
+        border-radius: 6px;
+    }
+    
+    .classification-modal h3 {
+        font-size: 0.9rem;
+        margin-bottom: 0.25rem;
+        font-weight: 700;
+    }
+    
+    .classification-modal p {
+        margin: 0.1rem 0;
+        font-size: 0.7rem;
+        line-height: 1.4;
+    }
+    
+    .classification-modal p strong {
+        font-weight: 700;
+        color: inherit;
     }
     
     .selection-panel-modal {
@@ -1504,41 +1584,15 @@ footer p {
         max-height: none;
         position: relative;
         overflow: visible;
+        padding: 0;
+        margin-bottom: 0;
     }
     
-    .results-panel-modal h3 {
-        font-size: 0.9rem;
-        margin-bottom: 0.5rem;
-        padding-bottom: 0.5rem;
-    }
-    
-    .score-display-modal {
+    .selection-panel-modal h3 {
         padding: 0.75rem;
-        margin-bottom: 0.5rem;
-    }
-    
-    .score-number {
-        font-size: 1.75rem;
-        margin-bottom: 0.25rem;
-    }
-    
-    .score-label {
-        font-size: 0.85rem;
-    }
-    
-    .classification-modal {
-        padding: 0.75rem;
-        font-size: 0.8rem;
-    }
-    
-    .classification-modal h3 {
-        font-size: 0.9rem;
-        margin-bottom: 0.25rem;
-    }
-    
-    .classification-modal p {
-        margin: 0.15rem 0;
-        font-size: 0.8rem;
+        margin: 0;
+        font-size: 0.95rem;
+        background: var(--bg-light);
     }
     
     /* Asegurar que los botones sean clickeables */
@@ -1591,24 +1645,27 @@ footer p {
 
     .action-buttons-modal {
         flex-direction: column;
-        gap: 0.75rem;
-        position: sticky;
+        gap: 0.5rem;
+        position: fixed;
         bottom: 0;
+        left: 0;
+        right: 0;
         background: white;
-        padding: 1rem;
+        padding: 0.75rem;
         margin: 0;
-        z-index: 200;
-        box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.15);
-        border-top: 2px solid var(--border-color);
+        z-index: 300;
+        box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.2);
+        border-top: 3px solid var(--primary-color);
     }
     
     .action-buttons-modal button {
-        min-height: 48px;
-        font-size: 1rem;
-        font-weight: 600;
+        min-height: 52px;
+        font-size: 1.05rem;
+        font-weight: 700;
         touch-action: manipulation;
         cursor: pointer;
-        border-radius: 8px;
+        border-radius: 10px;
+        border: none;
     }
 
     .legend {
