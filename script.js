@@ -13,7 +13,7 @@ const clasificaciones = {
         nombre: "Clase II",
         rango: "10-19 puntos",
         descripcion: "Vigilancia activa. Paciente estable que requiere observación.",
-        ratio: 0.33,
+        ratio: 1/3,
         ratioTexto: "1:3",
         color: "class-2",
         className: "clase2"
@@ -48,9 +48,18 @@ let notasTurno = '';
 // Función utilitaria para calcular días internados
 function calcularDiasInternado(fechaIngreso) {
     if (!fechaIngreso) return null;
-    const ingreso = new Date(fechaIngreso);
-    const hoy = new Date();
-    return Math.floor((hoy - ingreso) / (1000 * 60 * 60 * 24));
+    try {
+        // Parsear fecha como UTC para evitar problemas de timezone
+        const ingreso = new Date(fechaIngreso + 'T00:00:00');
+        const hoy = new Date();
+        hoy.setHours(0, 0, 0, 0); // Normalizar a medianoche
+        const dias = Math.floor((hoy - ingreso) / (1000 * 60 * 60 * 24));
+        // No mostrar días negativos (fechas futuras)
+        return dias >= 0 ? dias : 0;
+    } catch (e) {
+        console.error('Error calculando días:', e);
+        return null;
+    }
 }
 
 // Inicializar 22 camas
@@ -96,10 +105,18 @@ function initializeBeds() {
 
 // Guardar en localStorage
 function saveBeds() {
-    localStorage.setItem('tissUTIBeds', JSON.stringify(beds));
-    localStorage.setItem('tissUTITurno', turnoActual);
-    localStorage.setItem('tissUTIEnfermeros', enfermerosEnTurno);
-    localStorage.setItem('tissUTINotas', notasTurno);
+    try {
+        localStorage.setItem('tissUTIBeds', JSON.stringify(beds));
+        localStorage.setItem('tissUTITurno', turnoActual);
+        localStorage.setItem('tissUTIEnfermeros', enfermerosEnTurno);
+        localStorage.setItem('tissUTINotas', notasTurno);
+    } catch (e) {
+        console.error('Error guardando datos:', e);
+        // Si falla por quota exceeded, mostrar mensaje al usuario
+        if (e.name === 'QuotaExceededError') {
+            mostrarFeedback('⚠️ Memoria llena. Libere camas antiguas.', 'warning');
+        }
+    }
 }
 
 // Función para clasificar según puntos
@@ -191,15 +208,17 @@ function updateGlobalSummary() {
     
     // Mostrar distribución por clases
     const distribucionDiv = document.getElementById('distribucionClases');
-    if (occupied.length > 0) {
-        const partes = [];
-        if (counts.clase1 > 0) partes.push(`I: ${counts.clase1}`);
-        if (counts.clase2 > 0) partes.push(`II: ${counts.clase2}`);
-        if (counts.clase3 > 0) partes.push(`III: ${counts.clase3}`);
-        if (counts.clase4 > 0) partes.push(`IV: ${counts.clase4}`);
-        distribucionDiv.textContent = partes.length > 0 ? `Distribución: ${partes.join(' | ')}` : '';
-    } else {
-        distribucionDiv.textContent = '';
+    if (distribucionDiv) {
+        if (occupied.length > 0) {
+            const partes = [];
+            if (counts.clase1 > 0) partes.push(`I: ${counts.clase1}`);
+            if (counts.clase2 > 0) partes.push(`II: ${counts.clase2}`);
+            if (counts.clase3 > 0) partes.push(`III: ${counts.clase3}`);
+            if (counts.clase4 > 0) partes.push(`IV: ${counts.clase4}`);
+            distribucionDiv.textContent = partes.length > 0 ? `Distribución: ${partes.join(' | ')}` : '';
+        } else {
+            distribucionDiv.textContent = '';
+        }
     }
 }
 
@@ -289,9 +308,16 @@ function guardarPaciente() {
     
     const bed = beds[currentBedIndex];
     const puntos = calcularPuntuacionModal();
+    const nombre = document.getElementById('patientName').value.trim();
+    
+    // Validación: al menos debe tener nombre o puntaje
+    if (!nombre && puntos === 0) {
+        mostrarFeedback('⚠️ Ingrese al menos el nombre del paciente', 'warning');
+        return;
+    }
     
     bed.occupied = true;
-    bed.patientName = document.getElementById('patientName').value.trim();
+    bed.patientName = nombre;
     bed.diagnostico = document.getElementById('diagnostico').value.trim();
     bed.observaciones = document.getElementById('observaciones').value.trim();
     bed.fechaIngreso = document.getElementById('fechaIngreso').value;
@@ -316,14 +342,21 @@ function guardarPaciente() {
 }
 
 // Mostrar feedback visual temporal
-function mostrarFeedback(mensaje) {
+function mostrarFeedback(mensaje, tipo = 'success') {
     const feedback = document.createElement('div');
     feedback.textContent = mensaje;
+    
+    const colores = {
+        success: '#10b981',
+        warning: '#f59e0b',
+        error: '#ef4444'
+    };
+    
     feedback.style.cssText = `
         position: fixed;
         top: 20px;
         right: 20px;
-        background: #10b981;
+        background: ${colores[tipo] || colores.success};
         color: white;
         padding: 1rem 1.5rem;
         border-radius: 8px;
