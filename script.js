@@ -3,7 +3,6 @@ const clasificaciones = {
     clase1: {
         nombre: "Clase I",
         rango: "< 10 puntos",
-        descripcion: "Paciente no necesita UTI.",
         ratio: 0.25,
         ratioTexto: "1:4",
         color: "class-1",
@@ -12,7 +11,6 @@ const clasificaciones = {
     clase2: {
         nombre: "Clase II",
         rango: "10-19 puntos",
-        descripcion: "Vigilancia activa. Paciente estable que requiere observación.",
         ratio: 1/3,
         ratioTexto: "1:3",
         color: "class-2",
@@ -21,7 +19,6 @@ const clasificaciones = {
     clase3: {
         nombre: "Clase III",
         rango: "20-39 puntos",
-        descripcion: "Inestabilidad hemodinámica. Precisan monitorización (invasiva o no) y vigilancia intensiva.",
         ratio: 0.5,
         ratioTexto: "1:2",
         color: "class-3",
@@ -30,7 +27,6 @@ const clasificaciones = {
     clase4: {
         nombre: "Clase IV",
         rango: "≥ 40 puntos",
-        descripcion: "Gran inestabilidad hemodinámica que requiere cuidados médicos y de enfermería intensiva.",
         ratio: 1,
         ratioTexto: "1:1",
         color: "class-4",
@@ -295,10 +291,9 @@ function updateModalResults() {
     const classificationDiv = document.getElementById('classification');
     classificationDiv.className = `classification-modal ${clasificacion.color}`;
     classificationDiv.innerHTML = `
-        <h3 style="color: inherit; margin-bottom: 0.5rem;">${clasificacion.nombre}</h3>
-        <p style="margin: 0.25rem 0;"><strong>Rango:</strong> ${clasificacion.rango}</p>
-        <p style="margin: 0.25rem 0; font-size: 0.85rem;">${clasificacion.descripcion}</p>
-        <p style="margin: 0.5rem 0 0 0; font-weight: 700;"><strong>Ratio:</strong> ${clasificacion.ratioTexto}</p>
+        <h3 style="color: inherit; margin-bottom: 0.25rem;">${clasificacion.nombre}</h3>
+        <p style="margin: 0.15rem 0;"><strong>Rango:</strong> ${clasificacion.rango}</p>
+        <p style="margin: 0.25rem 0 0 0; font-weight: 700;"><strong>Ratio:</strong> ${clasificacion.ratioTexto}</p>
     `;
 }
 
