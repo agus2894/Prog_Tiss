@@ -41,17 +41,17 @@ let turnoActual = 'mañana';
 let enfermerosEnTurno = 0;
 let notasTurno = '';
 
-// Función para actualizar el texto del turno en impresión
-function updateTurnoPrint() {
+// Función para actualizar el texto del turno
+function updateTurnoDisplay() {
     const turnoTextos = {
         'mañana': 'Mañana (7-14hs)',
         'tarde': 'Tarde (14-21hs)',
         'noche': 'Noche (21-07hs)',
         'franquero': 'Franquero (7-21hs)'
     };
-    const turnoPrintEl = document.getElementById('turnoPrint');
-    if (turnoPrintEl) {
-        turnoPrintEl.textContent = turnoTextos[turnoActual] || turnoActual;
+    const turnoDisplayEl = document.getElementById('turnoDisplay');
+    if (turnoDisplayEl) {
+        turnoDisplayEl.textContent = turnoTextos[turnoActual] || turnoActual;
     }
 }
 
@@ -127,8 +127,8 @@ async function initializeBeds() {
         document.getElementById('turnoSelect').value = turnoActual;
     }
     
-    // Actualizar texto del turno para impresión
-    updateTurnoPrint();
+    // Actualizar texto del turno
+    updateTurnoDisplay();
     
     if (data.enfermeros !== undefined) {
         enfermerosEnTurno = data.enfermeros;
@@ -219,7 +219,6 @@ function renderBedsGrid() {
 function updateGlobalSummary() {
     const occupied = beds.filter(b => b.occupied);
     const tissTotal = occupied.reduce((sum, b) => sum + b.tiss, 0);
-    const tissPromedio = occupied.length > 0 ? (tissTotal / occupied.length).toFixed(1) : 0;
     
     let enfermerosNecesarios = 0;
     occupied.forEach(bed => {
@@ -231,7 +230,7 @@ function updateGlobalSummary() {
     document.getElementById('tissTotal').textContent = tissTotal;
     document.getElementById('enfermerosNecesarios').textContent = Math.ceil(enfermerosNecesarios);
     document.getElementById('enfermerosEnTurnoDisplay').textContent = enfermerosEnTurno;
-    document.getElementById('tissPromedio').textContent = tissPromedio;
+    updateTurnoDisplay();
     
     // Mostrar nota solo si faltan enfermeros
     const diferencia = enfermerosEnTurno - Math.ceil(enfermerosNecesarios);
@@ -483,7 +482,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     
     document.getElementById('turnoSelect').addEventListener('change', function(e) {
         turnoActual = e.target.value;
-        updateTurnoPrint();
+        updateTurnoDisplay();
         saveBeds();
     });
     
