@@ -1256,6 +1256,14 @@ footer p {
         display: none !important;
     }
     
+    .turno-print-info {
+        display: block !important;
+        font-weight: 600;
+        font-size: 0.9rem;
+        color: #1e40af;
+        margin-top: 0.25rem;
+    }
+    
     .section-header {
         margin-bottom: 0.5rem;
     }

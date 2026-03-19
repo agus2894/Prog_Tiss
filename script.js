@@ -41,6 +41,20 @@ let turnoActual = 'mañana';
 let enfermerosEnTurno = 0;
 let notasTurno = '';
 
+// Función para actualizar el texto del turno en impresión
+function updateTurnoPrint() {
+    const turnoTextos = {
+        'mañana': 'Mañana (7-14hs)',
+        'tarde': 'Tarde (14-21hs)',
+        'noche': 'Noche (21-07hs)',
+        'franquero': 'Franquero (7-21hs)'
+    };
+    const turnoPrintEl = document.getElementById('turnoPrint');
+    if (turnoPrintEl) {
+        turnoPrintEl.textContent = turnoTextos[turnoActual] || turnoActual;
+    }
+}
+
 // Actualizar indicador de estado de Supabase
 function updateSupabaseStatus() {
     const statusDiv = document.getElementById('supabaseStatus');
@@ -112,6 +126,9 @@ async function initializeBeds() {
         turnoActual = data.turno;
         document.getElementById('turnoSelect').value = turnoActual;
     }
+    
+    // Actualizar texto del turno para impresión
+    updateTurnoPrint();
     
     if (data.enfermeros !== undefined) {
         enfermerosEnTurno = data.enfermeros;
@@ -466,6 +483,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     
     document.getElementById('turnoSelect').addEventListener('change', function(e) {
         turnoActual = e.target.value;
+        updateTurnoPrint();
         saveBeds();
     });
     
