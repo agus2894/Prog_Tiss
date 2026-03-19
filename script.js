@@ -41,6 +41,36 @@ let turnoActual = 'mañana';
 let enfermerosEnTurno = 0;
 let notasTurno = '';
 
+// Actualizar indicador de estado de Supabase
+function updateSupabaseStatus() {
+    const statusDiv = document.getElementById('supabaseStatus');
+    const statusIcon = document.getElementById('supabaseStatusIcon');
+    const statusText = document.getElementById('supabaseStatusText');
+    
+    if (!statusDiv || !statusIcon || !statusText) return;
+    
+    if (supabaseService.isOnline()) {
+        statusDiv.style.display = 'block';
+        statusDiv.style.backgroundColor = '#d4edda';
+        statusDiv.style.color = '#155724';
+        statusIcon.textContent = '✅';
+        statusText.textContent = 'Conectado a Supabase - Datos sincronizados';
+        
+        // Ocultar mensaje después de 3 segundos
+        setTimeout(() => {
+            statusDiv.style.display = 'none';
+        }, 3000);
+    } else {
+        statusDiv.style.display = 'block';
+        statusDiv.style.backgroundColor = '#fff3cd';
+        statusDiv.style.color = '#856404';
+        statusIcon.textContent = '📴';
+        statusText.textContent = 'Modo offline - Datos guardados localmente';
+        
+        // Mantener visible en modo offline
+    }
+}
+
 // Función utilitaria para calcular días internados
 function calcularDiasInternado(fechaIngreso) {
     if (!fechaIngreso) return null;
@@ -59,7 +89,7 @@ function calcularDiasInternado(fechaIngreso) {
 }
 
 // Inicializar 22 camas
-function initializeBeds() {
+async function initializeBeds() {
     beds = Array.from({ length: 22 }, (_, i) => ({
         number: i + 1,
         occupied: false,
@@ -71,41 +101,42 @@ function initializeBeds() {
         selectedInterventions: []
     }));
     
-    const saved = localStorage.getItem('tissUTIBeds');
-    if (saved) {
-        try {
-            beds = JSON.parse(saved);
-        } catch (e) {
-            console.error('Error loading saved data:', e);
-        }
+    // Cargar desde Supabase (con fallback a localStorage)
+    const data = await supabaseService.loadBeds();
+    
+    if (data.beds && data.beds.length > 0) {
+        beds = data.beds;
     }
     
-    const savedTurno = localStorage.getItem('tissUTITurno');
-    if (savedTurno) {
-        turnoActual = savedTurno;
+    if (data.turno) {
+        turnoActual = data.turno;
         document.getElementById('turnoSelect').value = turnoActual;
     }
     
-    const savedEnfermeros = localStorage.getItem('tissUTIEnfermeros');
-    if (savedEnfermeros) {
-        enfermerosEnTurno = parseInt(savedEnfermeros);
+    if (data.enfermeros !== undefined) {
+        enfermerosEnTurno = data.enfermeros;
         document.getElementById('enfermerosEnTurno').value = enfermerosEnTurno;
     }
     
-    const savedNotas = localStorage.getItem('tissUTINotas');
-    if (savedNotas) {
-        notasTurno = savedNotas;
+    if (data.notas) {
+        notasTurno = data.notas;
         document.getElementById('notasTurno').value = notasTurno;
     }
 }
 
-// Guardar en localStorage
-function saveBeds() {
+// Guardar en Supabase (con fallback a localStorage)
+async function saveBeds() {
     try {
-        localStorage.setItem('tissUTIBeds', JSON.stringify(beds));
-        localStorage.setItem('tissUTITurno', turnoActual);
-        localStorage.setItem('tissUTIEnfermeros', enfermerosEnTurno);
-        localStorage.setItem('tissUTINotas', notasTurno);
+        const result = await supabaseService.saveBeds(
+            beds,
+            turnoActual,
+            enfermerosEnTurno,
+            notasTurno
+        );
+        
+        if (!result.success) {
+            console.warn('Usando almacenamiento local como respaldo');
+        }
     } catch (e) {
         console.error('Error guardando datos:', e);
         // Si falla por quota exceeded, mostrar mensaje al usuario
@@ -418,8 +449,13 @@ function limpiarTodo() {
 }
 
 // Event Listeners
-document.addEventListener('DOMContentLoaded', function() {
-    initializeBeds();
+document.addEventListener('DOMContentLoaded', async function() {
+    // Inicializar Supabase
+    await supabaseService.init();
+    updateSupabaseStatus();
+    
+    // Cargar y renderizar datos
+    await initializeBeds();
     renderBedsGrid();
     
     document.getElementById('closeModal').addEventListener('click', closeModal);

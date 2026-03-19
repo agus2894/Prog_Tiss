@@ -17,6 +17,12 @@
             <span><strong>HERRAMIENTA INFORMATIVA:</strong> No toma decisiones operativas. Los datos son referenciales.</span>
         </div>
 
+        <!-- Estado de Conexión Supabase -->
+        <div id="supabaseStatus" class="supabase-status" style="display: none; padding: 0.5rem 1rem; margin: 0.5rem 0; border-radius: 8px; font-size: 0.85rem; text-align: center;">
+            <span id="supabaseStatusIcon">🔄</span>
+            <span id="supabaseStatusText">Conectando...</span>
+        </div>
+
         <header>
             <h1>Gestión de UTI - TISS</h1>
             <p class="subtitle">Sistema de Puntuación de Intervenciones Terapéuticas</p>
@@ -387,6 +393,13 @@
         </footer>
     </div>
 
+    <!-- Supabase Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- Configuración de Supabase -->
+    <script src="supabase-config.js"></script>
+    <!-- Servicio de Supabase -->
+    <script src="supabase-service.js"></script>
+    <!-- Script principal -->
     <script src="script.js"></script>
 </body>
 </html>
