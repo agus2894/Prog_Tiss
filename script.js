@@ -233,12 +233,27 @@ function createBedCard(bed, index) {
         bedCard.classList.add(clase.className);
         
         let diasInternado = '';
+        let diasTexto = '';
         if (bed.fechaIngreso) {
             const dias = calcularDiasInternado(bed.fechaIngreso);
             if (dias !== null) {
                 diasInternado = `<div class="bed-dias">📅 ${dias} día${dias !== 1 ? 's' : ''}</div>`;
+                diasTexto = `${dias} día${dias !== 1 ? 's' : ''} internado`;
             }
         }
+        
+        // Crear contenido del tooltip
+        const diagnosticoTexto = bed.diagnostico ? `<div class="tooltip-diagnostico">${bed.diagnostico}</div>` : '';
+        const tooltipContent = `
+            <div class="bed-tooltip">
+                <div class="tooltip-header">Cama ${bed.number} - ${bed.patientName || 'Paciente'}</div>
+                ${diagnosticoTexto}
+                ${diasTexto ? `<div class="tooltip-dias">📅 ${diasTexto}</div>` : ''}
+                <div class="tooltip-clase">${clase.nombre} - ${bed.tiss} puntos</div>
+                <div class="tooltip-ratio">Ratio: ${clase.ratioTexto}</div>
+                <div class="tooltip-hint">Click para editar</div>
+            </div>
+        `;
         
         bedCard.innerHTML = `
             <div class="bed-number">Cama ${bed.number}</div>
@@ -246,6 +261,7 @@ function createBedCard(bed, index) {
             <div class="bed-status">${bed.patientName || 'Paciente'}</div>
             <div class="bed-tiss">${bed.tiss} pts</div>
             ${diasInternado}
+            ${tooltipContent}
         `;
     } else {
         bedCard.classList.add('empty');
