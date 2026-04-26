@@ -34,6 +34,12 @@ const clasificaciones = {
     }
 };
 
+// Utilidad: Formatear números con separadores de miles
+function formatNumber(num) {
+    if (num === null || num === undefined || isNaN(num)) return '0';
+    return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+}
+
 // Utilidad: Debounce para optimizar guardado
 function debounce(func, wait) {
     let timeout;
@@ -325,9 +331,9 @@ function updateGlobalSummary() {
     });
     
     document.getElementById('camasOcupadas').textContent = `${occupied.length}/22`;
-    document.getElementById('tissTotal').textContent = tissTotal;
-    document.getElementById('enfermerosNecesarios').textContent = Math.ceil(enfermerosNecesarios);
-    document.getElementById('enfermerosEnTurnoDisplay').textContent = enfermerosEnTurno;
+    document.getElementById('tissTotal').textContent = formatNumber(tissTotal);
+    document.getElementById('enfermerosNecesarios').textContent = formatNumber(Math.ceil(enfermerosNecesarios));
+    document.getElementById('enfermerosEnTurnoDisplay').textContent = formatNumber(enfermerosEnTurno);
     updateTurnoDisplay();
     
     // Mostrar nota solo si faltan enfermeros
@@ -481,36 +487,41 @@ function guardarPaciente() {
     closeModal();
 }
 
-// Mostrar feedback visual temporal
+// Mostrar notificación Toast profesional
 function mostrarFeedback(mensaje, tipo = 'success') {
-    const feedback = document.createElement('div');
-    feedback.textContent = mensaje;
+    const container = document.getElementById('toastContainer');
+    if (!container) return;
     
-    const colores = {
-        success: '#10b981',
-        warning: '#f59e0b',
-        error: '#ef4444'
+    const toast = document.createElement('div');
+    toast.className = `toast ${tipo}`;
+    
+    const iconos = {
+        success: '✓',
+        warning: '⚠',
+        error: '✕',
+        info: 'ℹ'
     };
     
-    feedback.style.cssText = `
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        background: ${colores[tipo] || colores.success};
-        color: white;
-        padding: 1rem 1.5rem;
-        border-radius: 8px;
-        font-weight: 600;
-        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-        z-index: 10000;
-        animation: slideIn 0.3s ease-out;
+    toast.innerHTML = `
+        <span class="toast-icon">${iconos[tipo] || iconos.success}</span>
+        <span class="toast-message">${mensaje}</span>
     `;
-    document.body.appendChild(feedback);
     
+    container.appendChild(toast);
+    
+    // Auto-remover después de 3 segundos
     setTimeout(() => {
-        feedback.style.animation = 'slideOut 0.3s ease-out';
-        setTimeout(() => feedback.remove(), 300);
-    }, 2000);
+        toast.classList.add('removing');
+        setTimeout(() => toast.remove(), 300);
+    }, 3000);
+}
+
+// Confirmación elegante (reemplazo de confirm())
+function confirmarAccion(mensaje, callback) {
+    const confirmacion = confirm(mensaje);
+    if (confirmacion) {
+        callback();
+    }
 }
 
 // Liberar cama
@@ -520,23 +531,26 @@ function liberarCama() {
     const bed = beds[currentBedIndex];
     const nombrePaciente = bed.patientName || 'este paciente';
     
-    if (confirm(`¿Está seguro de liberar la Cama ${bed.number}${bed.patientName ? ` (${bed.patientName})` : ''}?\n\nEsta acción eliminará todos los datos y no se puede deshacer.`)) {
-        beds[currentBedIndex] = {
-            number: beds[currentBedIndex].number,
-            occupied: false,
-            patientName: '',
-            diagnostico: '',
-            observaciones: '',
-            fechaIngreso: '',
-            tiss: 0,
-            selectedInterventions: []
-        };
-        
-        saveBeds();
-        renderBedsGrid();
-        mostrarFeedback('✓ Cama liberada correctamente');
-        closeModal();
-    }
+    confirmarAccion(
+        `¿Está seguro de liberar la Cama ${bed.number}${bed.patientName ? ` (${bed.patientName})` : ''}?\n\nEsta acción eliminará todos los datos y no se puede deshacer.`,
+        () => {
+            beds[currentBedIndex] = {
+                number: beds[currentBedIndex].number,
+                occupied: false,
+                patientName: '',
+                diagnostico: '',
+                observaciones: '',
+                fechaIngreso: '',
+                tiss: 0,
+                selectedInterventions: []
+            };
+            
+            saveBeds();
+            renderBedsGrid();
+            mostrarFeedback('✓ Cama liberada correctamente');
+            closeModal();
+        }
+    );
 }
 
 // Imprimir
@@ -546,21 +560,25 @@ function imprimirReporte() {
 
 // Limpiar todo
 function limpiarTodo() {
-    if (confirm('¿Está seguro de liberar TODAS las camas? Esta acción no se puede deshacer.')) {
-        beds = Array.from({ length: 22 }, (_, i) => ({
-            number: i + 1,
-            occupied: false,
-            patientName: '',
-            diagnostico: '',
-            observaciones: '',
-            fechaIngreso: '',
-            tiss: 0,
-            selectedInterventions: []
-        }));
-        previousBedsState = null; // Forzar render completo
-        saveBeds();
-        renderBedsGrid();
-    }
+    confirmarAccion(
+        '¿Está seguro de liberar TODAS las camas? Esta acción no se puede deshacer.',
+        () => {
+            beds = Array.from({ length: 22 }, (_, i) => ({
+                number: i + 1,
+                occupied: false,
+                patientName: '',
+                diagnostico: '',
+                observaciones: '',
+                fechaIngreso: '',
+                tiss: 0,
+                selectedInterventions: []
+            }));
+            previousBedsState = null; // Forzar render completo
+            saveBeds();
+            renderBedsGrid();
+            mostrarFeedback('✓ Todas las camas liberadas', 'success');
+        }
+    );
 }
 
 // Event Listeners

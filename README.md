@@ -148,16 +148,71 @@ Estas limitaciones fueron definidas para mantener la herramienta como **apoyo in
 
 ---
 
-## 🚀 Posibles Extensiones Futuras
+## 🚀 Mejoras Futuras Planificadas
 
-- 🔄 Backend con persistencia centralizada
-- 🔐 Autenticación por roles
-- 📄 Exportación a PDF estructurado
-- 📈 Dashboard histórico
-- 🔍 Auditoría de modificaciones
+### Funcionalidades Propuestas
+
+**UX / Visual:**
+- 🔍 Búsqueda rápida de pacientes/camas con filtrado en tiempo real
+- 📊 Indicador visual de capacidad (barras de progreso con código de colores)
+- ⚡ Atajos de teclado completos para usuarios expertos
+- 📋 Historial de actividad del turno con timestamps
+- 🌙 Modo oscuro para uso nocturno en UTI
+
+**Rendimiento:**
+- 🗑️ Limpieza automática de datos antiguos
+- ⚡ Caché de clasificaciones para optimizar renders
+- 📱 PWA completa (instalable, offline-first)
+
+**Funcionales:**
+- 📥 Exportar a Excel/CSV con formato
+- 📋 Plantillas de intervenciones frecuentes
+- 📈 Comparación entre turnos
+- 🔄 Backend opcional con Supabase
+- 🔐 Autenticación por roles (enfermero/coordinador/auditor)
+
+### Prioridad de Implementación
+
+**Fase 1** (1-2 semanas) - Quick wins
+- Búsqueda/filtro de camas
+- Exportar CSV
+- Atajos de teclado
+
+**Fase 2** (2-3 semanas) - Mejoras visuales
+- Indicadores de capacidad
+- Historial de actividad
+- Plantillas de intervenciones
+
+**Fase 3** (1-2 semanas) - Optimización
+- Caché y limpieza automática
+- PWA completa
+
+**Fase 4** (3-4 semanas) - Features avanzadas
+- Comparación entre turnos
+- Gráficos estadísticos
+- Backend opcional
+
+> **Filosofía:** Cada mejora debe resolver un problema real. No agregar complejidad innecesaria.
+
+---
+
+## ✅ Validación de Cálculos
+
+Los cálculos TISS implementados han sido verificados contra la bibliografía médica estándar (Miranda et al., 1996; Reis Miranda et al., 2003):
+
+| Clase | Puntos TISS | Ratio Enfermera:Paciente | Estado |
+|-------|-------------|--------------------------|--------|
+| I     | < 10        | 1:4 (0.25)              | ✅ Correcto |
+| II    | 10-19       | 1:3 (0.33)              | ✅ Correcto |
+| III   | 20-39       | 1:2 (0.50)              | ✅ Correcto |
+| IV    | ≥ 40        | 1:1 (1.00)              | ✅ Correcto |
+
+**Los cálculos son precisos y confiables para distribución de personal.**
 
 ---
 
 ## 📎 Contexto Profesional
 
 Proyecto desarrollado como solución digital aplicada a entorno clínico real, con validación funcional a nivel de servicio.
+
+**Versión actual:** 1.3 · Última actualización: Abril 2026

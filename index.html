@@ -131,56 +131,61 @@
         <div id="patientModal" class="modal">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h2 id="modalTitle">Cama #1</h2>
-                    <button class="modal-close" id="closeModal">&times;</button>
+                    <div class="modal-header-top">
+                        <h2 id="modalTitle">Cama #1</h2>
+                        <button class="modal-close" id="closeModal">&times;</button>
+                    </div>
+                    
+                    <!-- Datos del Paciente en Header -->
+                    <div class="patient-info-header">
+                        <div class="patient-info-row">
+                            <label class="info-field-compact">
+                                <span>Paciente:</span>
+                                <input type="text" id="patientName" placeholder="Nombre completo">
+                            </label>
+                            <label class="info-field-compact">
+                                <span>Ingreso:</span>
+                                <input type="date" id="fechaIngreso">
+                            </label>
+                        </div>
+                        <div class="patient-info-row">
+                            <label class="info-field-compact full-width">
+                                <span>Diagnóstico:</span>
+                                <input type="text" id="diagnostico" placeholder="Ej: Sepsis severa, IAM, EPOC descompensado">
+                            </label>
+                        </div>
+                        <div class="patient-info-row">
+                            <label class="info-field-compact full-width">
+                                <span>Observaciones:</span>
+                                <input type="text" id="observaciones" placeholder="Notas adicionales, alergias, evolución...">
+                            </label>
+                        </div>
+                    </div>
                 </div>
                 
                 <div class="modal-body">
-                    <!-- Columna 1: Información del Paciente -->
-                    <div class="patient-info-panel">
-                        <h3>📋 Datos del Paciente</h3>
-                        <div class="patient-info">
-                            <label class="info-field">
-                                <span>Nombre del Paciente:</span>
-                                <input type="text" id="patientName" placeholder="Ej: Juan Pérez">
-                            </label>
-                            <label class="info-field">
-                                <span>Fecha de Ingreso:</span>
-                                <input type="date" id="fechaIngreso">
-                            </label>
-                            <label class="info-field">
-                                <span>Diagnóstico:</span>
-                                <textarea id="diagnostico" placeholder="Ej: Sepsis severa, IAM, EPOC descompensado" rows="3"></textarea>
-                            </label>
-                            <label class="info-field">
-                                <span>Observaciones:</span>
-                                <textarea id="observaciones" placeholder="Notas adicionales, alergias, evolución..." rows="6"></textarea>
-                            </label>
+                    <!-- Columna 1: Resultados TISS (Estrecha, Fija) -->
+                    <div class="results-panel-modal" id="resultsPanel">
+                        <h3>📊 Resultado TISS</h3>
+                        
+                        <div class="score-display-modal" id="scoreDisplay">
+                            <div class="score-number" id="scoreNumber">0</div>
+                            <div class="score-label">Puntos TISS</div>
+                        </div>
+
+                        <div class="classification-modal" id="classification">
+                            <p style="text-align: center; color: #6b7280; font-size: 0.8rem;">Seleccione intervenciones</p>
                         </div>
                         
-                        <!-- Panel de Resultados (siempre visible) -->
-                        <div class="results-panel-modal" id="resultsPanel">
-                            <h3>Resultado TISS</h3>
-                            
-                            <div class="score-display-modal" id="scoreDisplay">
-                                <div class="score-number" id="scoreNumber">0</div>
-                                <div class="score-label">Puntos TISS</div>
-                            </div>
-
-                            <div class="classification-modal" id="classification">
-                                <p style="text-align: center; color: #6b7280;">Seleccione intervenciones para ver la clasificación</p>
-                            </div>
-                            
-                            <div class="action-buttons-modal">
-                                <button id="guardarPacienteBtn" class="btn-primary" title="Guardar paciente y cerrar (Ctrl+Enter)">💾 Guardar</button>
-                                <button id="liberarCamaBtn" class="btn-danger" title="Liberar esta cama y eliminar todos los datos del paciente">🗑️ Liberar</button>
-                                <button id="cancelarBtn" class="btn-secondary" title="Cancelar sin guardar cambios (Esc)">Cancelar</button>
-                            </div>
+                        <div class="action-buttons-modal">
+                            <button id="guardarPacienteBtn" class="btn-primary" title="Guardar paciente y cerrar (Ctrl+Enter)">💾 Guardar</button>
+                            <button id="liberarCamaBtn" class="btn-danger" title="Liberar esta cama y eliminar todos los datos del paciente">🗑️ Liberar</button>
+                            <button id="cancelarBtn" class="btn-secondary" title="Cancelar sin guardar cambios (Esc)">Cancelar</button>
                         </div>
                     </div>
 
                     <!-- Columna 2: Selección de Intervenciones TISS -->
-                    <div class="selection-panel-modal">
+                    <div class="interventions-panel-modal">
                         <h3>🏥 Intervenciones TISS</h3>
                         
                         <!-- Tabs de Categorías -->
@@ -395,6 +400,9 @@
             <p class="footer-note">Herramienta de apoyo informativo. No sustituye el criterio profesional.</p>
         </footer>
     </div>
+
+    <!-- Contenedor de notificaciones Toast -->
+    <div id="toastContainer" class="toast-container"></div>
 
     <!-- Supabase Client -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
