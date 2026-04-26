@@ -23,6 +23,9 @@
             <span id="supabaseStatusText">Conectando...</span>
         </div>
 
+        <!-- Indicador de Guardado -->
+        <div id="saveIndicator" class="save-indicator saved">✓ Guardado</div>
+
         <header>
             <h1>Gestión de UTI - TISS</h1>
             <p class="subtitle">Sistema de Puntuación de Intervenciones Terapéuticas</p>
@@ -153,6 +156,26 @@
                                 <span>Observaciones:</span>
                                 <textarea id="observaciones" placeholder="Notas adicionales, alergias, evolución..." rows="6"></textarea>
                             </label>
+                        </div>
+                        
+                        <!-- Panel de Resultados (siempre visible) -->
+                        <div class="results-panel-modal" id="resultsPanel">
+                            <h3>Resultado TISS</h3>
+                            
+                            <div class="score-display-modal" id="scoreDisplay">
+                                <div class="score-number" id="scoreNumber">0</div>
+                                <div class="score-label">Puntos TISS</div>
+                            </div>
+
+                            <div class="classification-modal" id="classification">
+                                <p style="text-align: center; color: #6b7280;">Seleccione intervenciones para ver la clasificación</p>
+                            </div>
+                            
+                            <div class="action-buttons-modal">
+                                <button id="guardarPacienteBtn" class="btn-primary" title="Guardar paciente y cerrar (Ctrl+Enter)">💾 Guardar</button>
+                                <button id="liberarCamaBtn" class="btn-danger" title="Liberar esta cama y eliminar todos los datos del paciente">🗑️ Liberar</button>
+                                <button id="cancelarBtn" class="btn-secondary" title="Cancelar sin guardar cambios (Esc)">Cancelar</button>
+                            </div>
                         </div>
                     </div>
 
@@ -363,26 +386,6 @@
                             </div>
                         </div>
                     </div>
-
-                    <!-- Panel de Resultados del Modal -->
-                    <div class="results-panel-modal" id="resultsPanel">
-                        <h3>Resultado TISS</h3>
-                        
-                        <div class="score-display-modal" id="scoreDisplay">
-                            <div class="score-number" id="scoreNumber">0</div>
-                            <div class="score-label">Puntos TISS</div>
-                        </div>
-
-                        <div class="classification-modal" id="classification">
-                            <p style="text-align: center; color: #6b7280;">Seleccione intervenciones para ver la clasificación</p>
-                        </div>
-                        
-                        <div class="action-buttons-modal">
-                            <button id="guardarPacienteBtn" class="btn-primary" title="Guardar paciente y cerrar (Ctrl+Enter)">💾 Guardar</button>
-                            <button id="liberarCamaBtn" class="btn-danger" title="Liberar esta cama y eliminar todos los datos del paciente">🗑️ Liberar</button>
-                            <button id="cancelarBtn" class="btn-secondary" title="Cancelar sin guardar cambios (Esc)">Cancelar</button>
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>
@@ -399,7 +402,16 @@
     <script src="supabase-config.js"></script>
     <!-- Servicio de Supabase -->
     <script src="supabase-service.js"></script>
-    <!-- Script principal -->
-    <script src="script.js"></script>
+    
+    <!-- Aplicación modularizada -->
+    <script type="module" src="js/constants.js"></script>
+    <script type="module" src="js/state.js"></script>
+    <script type="module" src="js/business.js"></script>
+    <script type="module" src="js/storage.js"></script>
+    <script type="module" src="js/ui.js"></script>
+    <script type="module" src="js/app.js"></script>
+    
+    <!-- Script original (comentado - mantener como respaldo) -->
+    <!-- <script src="script.js"></script> -->
 </body>
 </html>

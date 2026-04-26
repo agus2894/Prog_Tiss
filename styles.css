@@ -631,24 +631,23 @@ header h1 {
 
 .modal-body {
     padding: 2rem;
-    overflow-y: auto;
+    overflow: hidden;
     flex: 1;
     display: grid;
-    grid-template-columns: 300px 1fr 350px;
-    gap: 1.5rem;
+    grid-template-columns: 420px 1fr;
+    gap: 2rem;
     align-items: start;
+    max-height: 80vh;
 }
 
-/* Columna 1: Panel de Información del Paciente */
+/* Columna 1: Panel de Información del Paciente (sticky con resultados) */
 .patient-info-panel {
     display: flex;
     flex-direction: column;
     gap: 1rem;
-    position: sticky;
-    top: 0;
-    height: fit-content;
-    max-height: calc(90vh - 200px);
+    height: 80vh;
     overflow-y: auto;
+    padding-right: 0.75rem;
 }
 
 .patient-info-panel h3 {
@@ -703,11 +702,11 @@ header h1 {
     box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
 }
 
-/* Columna 2: Panel de Selección de Intervenciones */
+/* Columna 2: Panel de Selección de Intervenciones (scrolleable) */
 .selection-panel-modal {
     overflow-y: auto;
-    max-height: calc(90vh - 200px);
-    padding-right: 0.5rem;
+    height: 80vh;
+    padding-right: 0.75rem;
 }
 
 .selection-panel-modal h3 {
@@ -732,6 +731,11 @@ header h1 {
     border-bottom: 2px solid var(--border-color);
     gap: 0.25rem;
     padding: 0.5rem;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    margin-bottom: 1rem;
 }
 
 .tab-btn {
@@ -883,16 +887,17 @@ header h1 {
     box-shadow: var(--shadow-lg);
 }
 
-/* Columna 3: Panel de Resultados */
+/* Panel de Resultados (ahora dentro de patient-info-panel) */
 .results-panel-modal {
-    background: var(--bg-light);
+    background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
     border-radius: 12px;
     padding: 1.5rem;
+    margin-top: 1rem;
+    border: 2px solid var(--success-color);
     position: sticky;
-    top: 0;
-    height: fit-content;
-    max-height: calc(90vh - 200px);
-    overflow-y: auto;
+    bottom: 0;
+    background: var(--bg-white);
+    box-shadow: 0 -4px 6px -1px rgba(0, 0, 0, 0.1);
 }
 
 .results-panel-modal h3 {
@@ -1791,5 +1796,56 @@ footer p {
     to {
         transform: translateX(400px);
         opacity: 0;
+    }
+}
+
+/* Indicador de guardado */
+.save-indicator {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    padding: 0.75rem 1.25rem;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    z-index: 9999;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+}
+
+.save-indicator.saved {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: white;
+    opacity: 0.9;
+}
+
+.save-indicator.saving {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    color: white;
+    animation: pulseIndicator 1.5s ease-in-out infinite;
+}
+
+.save-indicator.pending {
+    background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+    color: white;
+    opacity: 0.85;
+}
+
+@keyframes pulseIndicator {
+    0%, 100% { 
+        opacity: 1;
+        transform: scale(1);
+    }
+    50% { 
+        opacity: 0.7;
+        transform: scale(0.98);
+    }
+}
+
+/* Ocultar indicador en impresión */
+@media print {
+    .save-indicator {
+        display: none !important;
     }
 }
