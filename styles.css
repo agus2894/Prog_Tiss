@@ -1391,6 +1391,11 @@ footer p {
 
 /* Estilos de Impresión */
 @media print {
+    @page {
+        size: A4;
+        margin: 15mm 10mm;
+    }
+    
     body {
         background: white;
         padding: 0;
@@ -1432,12 +1437,12 @@ footer p {
     .container {
         box-shadow: none;
         max-width: 100%;
-        padding: 0.5rem;
+        padding: 0;
     }
     
     .global-summary {
         page-break-inside: avoid;
-        margin-bottom: 0.75rem;
+        margin-bottom: 1rem;
         gap: 0.5rem;
     }
     
@@ -1464,7 +1469,7 @@ footer p {
     .notas-turno-section {
         page-break-inside: avoid;
         border: 1px solid #ddd;
-        margin-bottom: 0.75rem;
+        margin-bottom: 1rem;
         padding: 0.5rem;
     }
     
@@ -1484,7 +1489,11 @@ footer p {
     }
     
     .beds-section {
-        margin-bottom: 0.5rem;
+        margin-bottom: 1rem;
+    }
+    
+    .section-header {
+        margin-bottom: 0.75rem;
     }
     
     .beds-grid {
@@ -1496,6 +1505,12 @@ footer p {
     /* Salto de página después de la cama 10 */
     .bed-card:nth-child(10) {
         page-break-after: always;
+        margin-bottom: 0;
+    }
+    
+    /* Margen superior para la primera cama de la segunda página */
+    .bed-card:nth-child(11) {
+        margin-top: 2rem;
     }
     
     .bed-card {
