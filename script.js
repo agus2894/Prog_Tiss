@@ -555,8 +555,35 @@ function liberarCama() {
 
 // Imprimir
 function imprimirReporte() {
-    window.print();
+    const notasTextarea = document.getElementById('notasTurno');
+    const alturaOriginal = notasTextarea.style.height;
+    
+    // Ajustar altura del textarea al contenido completo antes de imprimir
+    notasTextarea.style.height = 'auto';
+    notasTextarea.style.height = notasTextarea.scrollHeight + 'px';
+    
+    // Esperar un momento para que el navegador aplique los cambios
+    setTimeout(() => {
+        window.print();
+        
+        // Restaurar altura original después de imprimir
+        setTimeout(() => {
+            notasTextarea.style.height = alturaOriginal;
+        }, 100);
+    }, 100);
 }
+
+// Ajustar textarea también cuando se detecte el evento beforeprint
+window.addEventListener('beforeprint', () => {
+    const notasTextarea = document.getElementById('notasTurno');
+    notasTextarea.style.height = 'auto';
+    notasTextarea.style.height = notasTextarea.scrollHeight + 'px';
+});
+
+window.addEventListener('afterprint', () => {
+    const notasTextarea = document.getElementById('notasTurno');
+    notasTextarea.style.height = '';
+});
 
 // Limpiar todo
 function limpiarTodo() {

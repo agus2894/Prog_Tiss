@@ -1463,26 +1463,28 @@ footer p {
     }
     
     .notas-turno-section {
-        page-break-inside: avoid;
         border: 1px solid #ddd;
         margin-bottom: 0.75rem;
         padding: 0.5rem;
     }
     
     .notas-turno-section label {
-        font-size: 0.85rem;
+        font-size: 0.9rem;
         margin-bottom: 0.25rem;
+        font-weight: 600;
     }
     
     .notas-turno-section textarea {
-        border: none;
-        padding: 0.25rem;
-        min-height: auto;
-        font-size: 0.75rem;
-        height: auto;
-        max-height: none;
-        overflow: visible;
-        white-space: pre-wrap;
+        border: 1px solid #ddd !important;
+        padding: 0.5rem !important;
+        min-height: 4rem !important;
+        font-size: 0.85rem !important;
+        height: auto !important;
+        max-height: none !important;
+        overflow: visible !important;
+        white-space: pre-wrap !important;
+        line-height: 1.5 !important;
+        display: block !important;
     }
     
     .beds-section {
