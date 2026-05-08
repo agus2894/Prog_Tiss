@@ -557,10 +557,15 @@ function liberarCama() {
 function imprimirReporte() {
     const notasTextarea = document.getElementById('notasTurno');
     const alturaOriginal = notasTextarea.style.height;
+    const overflowOriginal = notasTextarea.style.overflow;
     
     // Ajustar altura del textarea al contenido completo antes de imprimir
+    notasTextarea.style.overflow = 'visible';
     notasTextarea.style.height = 'auto';
-    notasTextarea.style.height = notasTextarea.scrollHeight + 'px';
+    
+    // Calcular altura necesaria basada en scrollHeight
+    const scrollHeight = notasTextarea.scrollHeight;
+    notasTextarea.style.height = (scrollHeight + 20) + 'px'; // +20px de margen
     
     // Esperar un momento para que el navegador aplique los cambios
     setTimeout(() => {
@@ -569,20 +574,28 @@ function imprimirReporte() {
         // Restaurar altura original después de imprimir
         setTimeout(() => {
             notasTextarea.style.height = alturaOriginal;
-        }, 100);
-    }, 100);
+            notasTextarea.style.overflow = overflowOriginal;
+        }, 200);
+    }, 150);
 }
 
 // Ajustar textarea también cuando se detecte el evento beforeprint
 window.addEventListener('beforeprint', () => {
     const notasTextarea = document.getElementById('notasTurno');
-    notasTextarea.style.height = 'auto';
-    notasTextarea.style.height = notasTextarea.scrollHeight + 'px';
+    if (notasTextarea) {
+        notasTextarea.style.overflow = 'visible';
+        notasTextarea.style.height = 'auto';
+        const scrollHeight = notasTextarea.scrollHeight;
+        notasTextarea.style.height = (scrollHeight + 20) + 'px';
+    }
 });
 
 window.addEventListener('afterprint', () => {
     const notasTextarea = document.getElementById('notasTurno');
-    notasTextarea.style.height = '';
+    if (notasTextarea) {
+        notasTextarea.style.height = '';
+        notasTextarea.style.overflow = '';
+    }
 });
 
 // Limpiar todo

@@ -1391,6 +1391,11 @@ footer p {
 
 /* Estilos de Impresión */
 @media print {
+    @page {
+        size: auto;
+        margin: 10mm;
+    }
+    
     body {
         background: white;
         padding: 0;
@@ -1463,28 +1468,33 @@ footer p {
     }
     
     .notas-turno-section {
-        border: 1px solid #ddd;
-        margin-bottom: 0.75rem;
-        padding: 0.5rem;
+        border: 1px solid #333;
+        margin-bottom: 1rem;
+        padding: 0.75rem;
     }
     
     .notas-turno-section label {
-        font-size: 0.9rem;
-        margin-bottom: 0.25rem;
+        font-size: 0.95rem;
+        margin-bottom: 0.5rem;
         font-weight: 600;
+        display: block;
     }
     
     .notas-turno-section textarea {
-        border: 1px solid #ddd !important;
-        padding: 0.5rem !important;
-        min-height: 4rem !important;
-        font-size: 0.85rem !important;
+        border: 1px solid #666 !important;
+        padding: 0.75rem !important;
+        font-size: 0.9rem !important;
+        width: 100% !important;
         height: auto !important;
+        min-height: auto !important;
         max-height: none !important;
         overflow: visible !important;
         white-space: pre-wrap !important;
-        line-height: 1.5 !important;
+        word-wrap: break-word !important;
+        line-height: 1.6 !important;
         display: block !important;
+        box-sizing: border-box !important;
+        resize: none !important;
     }
     
     .beds-section {
@@ -2088,5 +2098,16 @@ footer p {
     .save-indicator,
     .toast-container {
         display: none !important;
+    }
+    
+    /* Forzar expansión completa del textarea de notas */
+    #notasTurno {
+        height: auto !important;
+        min-height: auto !important;
+        max-height: none !important;
+        overflow: visible !important;
+        page-break-inside: auto !important;
+        white-space: pre-wrap !important;
+        word-wrap: break-word !important;
     }
 }
