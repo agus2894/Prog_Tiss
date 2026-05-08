@@ -300,6 +300,13 @@ function renderBedsGrid() {
         beds.forEach((bed, index) => {
             const bedCard = createBedCard(bed, index);
             grid.appendChild(bedCard);
+            
+            // Agregar separador invisible después de la cama 10 para la impresión
+            if (index === 9) {
+                const separator = document.createElement('div');
+                separator.className = 'page-break-separator';
+                grid.appendChild(separator);
+            }
         });
         previousBedsState = JSON.parse(JSON.stringify(beds));
         updateGlobalSummary();
