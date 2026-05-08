@@ -1393,7 +1393,7 @@ footer p {
 @media print {
     @page {
         size: A4;
-        margin: 15mm 10mm;
+        margin: 25mm 15mm;
     }
     
     body {
@@ -1505,12 +1505,12 @@ footer p {
     /* Salto de página después de la cama 10 */
     .bed-card:nth-child(10) {
         page-break-after: always;
-        margin-bottom: 0;
+        margin-bottom: 5rem;
     }
     
-    /* Margen superior para la primera cama de la segunda página */
+    /* Margen superior grande para la primera cama de la segunda página */
     .bed-card:nth-child(11) {
-        margin-top: 2rem;
+        padding-top: 5rem;
     }
     
     .bed-card {
