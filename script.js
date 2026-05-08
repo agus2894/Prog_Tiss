@@ -555,33 +555,8 @@ function liberarCama() {
 
 // Imprimir
 function imprimirReporte() {
-    const notasTextarea = document.getElementById('notasTurno');
-    const notasPrintDiv = document.getElementById('notasTurnoPrint');
-    
-    // Copiar el contenido del textarea al div de impresión
-    if (notasTextarea && notasPrintDiv) {
-        notasPrintDiv.textContent = notasTextarea.value;
-    }
-    
-    // Imprimir inmediatamente
-    setTimeout(() => {
-        window.print();
-    }, 50);
+    window.print();
 }
-
-// Ajustar también cuando se detecte el evento beforeprint
-window.addEventListener('beforeprint', () => {
-    const notasTextarea = document.getElementById('notasTurno');
-    const notasPrintDiv = document.getElementById('notasTurnoPrint');
-    
-    if (notasTextarea && notasPrintDiv) {
-        notasPrintDiv.textContent = notasTextarea.value;
-    }
-});
-
-window.addEventListener('afterprint', () => {
-    // No es necesario limpiar, el div está oculto en pantalla
-});
 
 // Limpiar todo
 function limpiarTodo() {
