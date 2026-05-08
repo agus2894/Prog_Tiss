@@ -1480,8 +1480,9 @@ footer p {
         min-height: auto;
         font-size: 0.75rem;
         height: auto;
-        max-height: 3rem;
-        overflow: hidden;
+        max-height: none;
+        overflow: visible;
+        white-space: pre-wrap;
     }
     
     .beds-section {
