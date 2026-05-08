@@ -294,6 +294,11 @@ header h1 {
     transform: translateY(-1px);
 }
 
+/* Ocultar versión de impresión en pantalla */
+.notas-turno-print {
+    display: none;
+}
+
 /* Beds Section */
 .beds-section {
     background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
@@ -1480,21 +1485,25 @@ footer p {
         display: block;
     }
     
+    /* Ocultar textarea original en impresión */
     .notas-turno-section textarea {
-        border: 1px solid #666 !important;
-        padding: 0.75rem !important;
-        font-size: 0.9rem !important;
-        width: 100% !important;
-        height: auto !important;
-        min-height: auto !important;
-        max-height: none !important;
-        overflow: visible !important;
-        white-space: pre-wrap !important;
-        word-wrap: break-word !important;
-        line-height: 1.6 !important;
+        display: none !important;
+    }
+    
+    /* Mostrar versión de impresión */
+    .notas-turno-print {
         display: block !important;
-        box-sizing: border-box !important;
-        resize: none !important;
+        border: 1px solid #666;
+        padding: 0.75rem;
+        font-size: 0.9rem;
+        width: 100%;
+        min-height: 2rem;
+        white-space: pre-wrap;
+        word-wrap: break-word;
+        line-height: 1.6;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        color: #000;
+        background: white;
     }
     
     .beds-section {
@@ -2098,16 +2107,5 @@ footer p {
     .save-indicator,
     .toast-container {
         display: none !important;
-    }
-    
-    /* Forzar expansión completa del textarea de notas */
-    #notasTurno {
-        height: auto !important;
-        min-height: auto !important;
-        max-height: none !important;
-        overflow: visible !important;
-        page-break-inside: auto !important;
-        white-space: pre-wrap !important;
-        word-wrap: break-word !important;
     }
 }

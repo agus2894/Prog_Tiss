@@ -556,46 +556,31 @@ function liberarCama() {
 // Imprimir
 function imprimirReporte() {
     const notasTextarea = document.getElementById('notasTurno');
-    const alturaOriginal = notasTextarea.style.height;
-    const overflowOriginal = notasTextarea.style.overflow;
+    const notasPrintDiv = document.getElementById('notasTurnoPrint');
     
-    // Ajustar altura del textarea al contenido completo antes de imprimir
-    notasTextarea.style.overflow = 'visible';
-    notasTextarea.style.height = 'auto';
+    // Copiar el contenido del textarea al div de impresión
+    if (notasTextarea && notasPrintDiv) {
+        notasPrintDiv.textContent = notasTextarea.value;
+    }
     
-    // Calcular altura necesaria basada en scrollHeight
-    const scrollHeight = notasTextarea.scrollHeight;
-    notasTextarea.style.height = (scrollHeight + 20) + 'px'; // +20px de margen
-    
-    // Esperar un momento para que el navegador aplique los cambios
+    // Imprimir inmediatamente
     setTimeout(() => {
         window.print();
-        
-        // Restaurar altura original después de imprimir
-        setTimeout(() => {
-            notasTextarea.style.height = alturaOriginal;
-            notasTextarea.style.overflow = overflowOriginal;
-        }, 200);
-    }, 150);
+    }, 50);
 }
 
-// Ajustar textarea también cuando se detecte el evento beforeprint
+// Ajustar también cuando se detecte el evento beforeprint
 window.addEventListener('beforeprint', () => {
     const notasTextarea = document.getElementById('notasTurno');
-    if (notasTextarea) {
-        notasTextarea.style.overflow = 'visible';
-        notasTextarea.style.height = 'auto';
-        const scrollHeight = notasTextarea.scrollHeight;
-        notasTextarea.style.height = (scrollHeight + 20) + 'px';
+    const notasPrintDiv = document.getElementById('notasTurnoPrint');
+    
+    if (notasTextarea && notasPrintDiv) {
+        notasPrintDiv.textContent = notasTextarea.value;
     }
 });
 
 window.addEventListener('afterprint', () => {
-    const notasTextarea = document.getElementById('notasTurno');
-    if (notasTextarea) {
-        notasTextarea.style.height = '';
-        notasTextarea.style.overflow = '';
-    }
+    // No es necesario limpiar, el div está oculto en pantalla
 });
 
 // Limpiar todo
