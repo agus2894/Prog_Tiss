@@ -301,8 +301,8 @@ function renderBedsGrid() {
             const bedCard = createBedCard(bed, index);
             grid.appendChild(bedCard);
             
-            // Agregar separador invisible después de la cama 10 para la impresión
-            if (index === 9) {
+            // Agregar separador después de la cama 9 (para 2 páginas horizontales con 9 camas c/u)
+            if (index === 8) {
                 const separator = document.createElement('div');
                 separator.className = 'page-break-separator';
                 grid.appendChild(separator);
