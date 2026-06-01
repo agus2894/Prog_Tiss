@@ -300,13 +300,6 @@ function renderBedsGrid() {
         beds.forEach((bed, index) => {
             const bedCard = createBedCard(bed, index);
             grid.appendChild(bedCard);
-            
-            // Agregar separador después de la cama 9 (para 2 páginas horizontales con 9 camas c/u)
-            if (index === 8) {
-                const separator = document.createElement('div');
-                separator.className = 'page-break-separator';
-                grid.appendChild(separator);
-            }
         });
         previousBedsState = JSON.parse(JSON.stringify(beds));
         updateGlobalSummary();
