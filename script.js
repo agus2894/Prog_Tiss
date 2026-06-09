@@ -369,41 +369,55 @@ function updateGlobalSummary() {
     }
 }
 
+// Función para resetear completamente todos los checkboxes del modal
+function resetearCheckboxes() {
+    const checkboxes = document.querySelectorAll('.modal input[type="checkbox"]');
+    checkboxes.forEach(checkbox => {
+        // Limpiar tanto la propiedad como el atributo HTML
+        checkbox.checked = false;
+        checkbox.removeAttribute('checked');
+    });
+}
+
 // Abrir modal
 function openModal(bedIndex) {
     currentBedIndex = bedIndex;
     const bed = beds[bedIndex];
     const modal = document.getElementById('patientModal');
     
+    // PASO 1: Resetear TODOS los checkboxes primero (limpieza total)
+    resetearCheckboxes();
+    
+    // PASO 2: Limpiar campos de texto
     document.getElementById('modalTitle').textContent = `Cama ${bed.number}`;
-    document.getElementById('patientName').value = bed.patientName || '';
-    document.getElementById('diagnostico').value = bed.diagnostico || '';
-    document.getElementById('observaciones').value = bed.observaciones || '';
+    document.getElementById('patientName').value = '';
+    document.getElementById('diagnostico').value = '';
+    document.getElementById('observaciones').value = '';
+    document.getElementById('fechaIngreso').value = '';
     
-    // Si la cama está vacía, usar fecha actual por defecto
-    if (!bed.occupied && !bed.fechaIngreso) {
-        document.getElementById('fechaIngreso').value = new Date().toISOString().split('T')[0];
-    } else {
+    // PASO 3: Cargar datos del paciente (solo si existe)
+    if (bed.occupied) {
+        document.getElementById('patientName').value = bed.patientName || '';
+        document.getElementById('diagnostico').value = bed.diagnostico || '';
+        document.getElementById('observaciones').value = bed.observaciones || '';
         document.getElementById('fechaIngreso').value = bed.fechaIngreso || '';
+        
+        // PASO 4: Marcar solo las intervenciones guardadas del paciente existente
+        if (bed.selectedInterventions && bed.selectedInterventions.length > 0) {
+            const checkboxes = document.querySelectorAll('.modal input[type="checkbox"]');
+            checkboxes.forEach(checkbox => {
+                const key = checkbox.dataset.points + '-' + checkbox.dataset.category;
+                if (bed.selectedInterventions.includes(key)) {
+                    checkbox.checked = true;
+                }
+            });
+        }
+    } else {
+        // PASO 5: Si es nueva cama, usar fecha actual por defecto
+        document.getElementById('fechaIngreso').value = new Date().toISOString().split('T')[0];
     }
     
-    // SIEMPRE desmarcar todos los checkboxes primero
-    const checkboxes = document.querySelectorAll('.modal input[type="checkbox"]');
-    checkboxes.forEach(checkbox => {
-        checkbox.checked = false;
-    });
-    
-    // Si la cama está OCUPADA (paciente existente), marcar las intervenciones guardadas
-    if (bed.occupied && bed.selectedInterventions && bed.selectedInterventions.length > 0) {
-        checkboxes.forEach(checkbox => {
-            const key = checkbox.dataset.points + '-' + checkbox.dataset.category;
-            if (bed.selectedInterventions.includes(key)) {
-                checkbox.checked = true;
-            }
-        });
-    }
-    // Si la cama está VACÍA (nuevo paciente), todos los checkboxes quedan desmarcados
-    
+    // PASO 6: Actualizar resultados y abrir modal
     updateModalResults();
     modal.classList.add('active');
 }
@@ -413,11 +427,14 @@ function closeModal() {
     const modal = document.getElementById('patientModal');
     modal.classList.remove('active');
     
-    // Limpiar todos los checkboxes al cerrar para evitar residuos
-    const checkboxes = document.querySelectorAll('.modal input[type="checkbox"]');
-    checkboxes.forEach(checkbox => {
-        checkbox.checked = false;
-    });
+    // Resetear todos los checkboxes y campos al cerrar
+    resetearCheckboxes();
+    
+    // Limpiar también los campos de texto para evitar cualquier residuo
+    document.getElementById('patientName').value = '';
+    document.getElementById('diagnostico').value = '';
+    document.getElementById('observaciones').value = '';
+    document.getElementById('fechaIngreso').value = '';
     
     currentBedIndex = null;
 }
@@ -586,6 +603,9 @@ document.addEventListener('DOMContentLoaded', async function() {
     // Inicializar Supabase
     await supabaseService.init();
     updateSupabaseStatus();
+    
+    // Limpiar todos los checkboxes al cargar la página (medida preventiva)
+    resetearCheckboxes();
     
     // Cargar y renderizar datos
     await initializeBeds();
