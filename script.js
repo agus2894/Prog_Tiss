@@ -62,6 +62,94 @@ let notasTurno = '';
 let saveStatus = 'saved'; // Estados: 'saved', 'saving', 'pending'
 let previousBedsState = null; // Para renderizado diferencial
 
+// Cache de elementos DOM (optimización de rendimiento)
+const DOMCache = {
+    turnoDisplay: null,
+    supabaseStatus: null,
+    supabaseStatusIcon: null,
+    supabaseStatusText: null,
+    turnoSelect: null,
+    enfermerosInput: null,
+    notasTurnoTextarea: null,
+    saveIndicator: null,
+    bedsGrid: null,
+    camasOcupadas: null,
+    tissTotal: null,
+    enfermerosNecesarios: null,
+    enfermerosEnTurnoDisplay: null,
+    diferenciaNota: null,
+    distribucionClases: null,
+    patientModal: null,
+    transferModal: null,
+    modalTitle: null,
+    patientName: null,
+    diagnostico: null,
+    observaciones: null,
+    fechaIngreso: null,
+    scoreNumber: null,
+    classification: null,
+    toastContainer: null,
+    bedsSelectionGrid: null,
+    transferModalTitle: null,
+    transferDescription: null,
+    modalCheckboxes: null,
+    
+    // Inicializar cache
+    init() {
+        this.turnoDisplay = document.getElementById('turnoDisplay');
+        this.supabaseStatus = document.getElementById('supabaseStatus');
+        this.supabaseStatusIcon = document.getElementById('supabaseStatusIcon');
+        this.supabaseStatusText = document.getElementById('supabaseStatusText');
+        this.turnoSelect = document.getElementById('turnoSelect');
+        this.enfermerosInput = document.getElementById('enfermerosEnTurno');
+        this.notasTurnoTextarea = document.getElementById('notasTurno');
+        this.saveIndicator = document.getElementById('saveIndicator');
+        this.bedsGrid = document.getElementById('bedsGrid');
+        this.camasOcupadas = document.getElementById('camasOcupadas');
+        this.tissTotal = document.getElementById('tissTotal');
+        this.enfermerosNecesarios = document.getElementById('enfermerosNecesarios');
+        this.enfermerosEnTurnoDisplay = document.getElementById('enfermerosEnTurnoDisplay');
+        this.diferenciaNota = document.getElementById('diferenciaNota');
+        this.distribucionClases = document.getElementById('distribucionClases');
+        this.patientModal = document.getElementById('patientModal');
+        this.transferModal = document.getElementById('transferModal');
+        this.modalTitle = document.getElementById('modalTitle');
+        this.patientName = document.getElementById('patientName');
+        this.diagnostico = document.getElementById('diagnostico');
+        this.observaciones = document.getElementById('observaciones');
+        this.fechaIngreso = document.getElementById('fechaIngreso');
+        this.scoreNumber = document.getElementById('scoreNumber');
+        this.classification = document.getElementById('classification');
+        this.toastContainer = document.getElementById('toastContainer');
+        this.bedsSelectionGrid = document.getElementById('bedsSelectionGrid');
+        this.transferModalTitle = document.getElementById('transferModalTitle');
+        this.transferDescription = document.getElementById('transferDescription');
+        // Cachear checkboxes se hace después de que el DOM esté completamente cargado
+    },
+    
+    // Obtener checkboxes del modal (se actualizan dinámicamente)
+    getModalCheckboxes() {
+        if (!this.modalCheckboxes) {
+            this.modalCheckboxes = document.querySelectorAll('.modal input[type="checkbox"]');
+        }
+        return this.modalCheckboxes;
+    }
+};
+
+// Clonación eficiente de objetos (reemplazo de JSON.parse/stringify)
+function cloneBedsState(beds) {
+    return beds.map(bed => ({
+        number: bed.number,
+        occupied: bed.occupied,
+        patientName: bed.patientName,
+        diagnostico: bed.diagnostico,
+        observaciones: bed.observaciones,
+        fechaIngreso: bed.fechaIngreso,
+        tiss: bed.tiss,
+        selectedInterventions: [...(bed.selectedInterventions || [])]
+    }));
+}
+
 // Función para actualizar el texto del turno
 function updateTurnoDisplay() {
     const turnoTextos = {
@@ -70,37 +158,32 @@ function updateTurnoDisplay() {
         'noche': 'Noche (21-07hs)',
         'franquero': 'Franquero (7-21hs)'
     };
-    const turnoDisplayEl = document.getElementById('turnoDisplay');
-    if (turnoDisplayEl) {
-        turnoDisplayEl.textContent = turnoTextos[turnoActual] || turnoActual;
+    if (DOMCache.turnoDisplay) {
+        DOMCache.turnoDisplay.textContent = turnoTextos[turnoActual] || turnoActual;
     }
 }
 
 // Actualizar indicador de estado de Supabase
 function updateSupabaseStatus() {
-    const statusDiv = document.getElementById('supabaseStatus');
-    const statusIcon = document.getElementById('supabaseStatusIcon');
-    const statusText = document.getElementById('supabaseStatusText');
-    
-    if (!statusDiv || !statusIcon || !statusText) return;
+    if (!DOMCache.supabaseStatus || !DOMCache.supabaseStatusIcon || !DOMCache.supabaseStatusText) return;
     
     if (supabaseService.isOnline()) {
-        statusDiv.style.display = 'block';
-        statusDiv.style.backgroundColor = '#d4edda';
-        statusDiv.style.color = '#155724';
-        statusIcon.textContent = '✅';
-        statusText.textContent = 'Conectado a Supabase - Datos sincronizados';
+        DOMCache.supabaseStatus.style.display = 'block';
+        DOMCache.supabaseStatus.style.backgroundColor = '#d4edda';
+        DOMCache.supabaseStatus.style.color = '#155724';
+        DOMCache.supabaseStatusIcon.textContent = '✅';
+        DOMCache.supabaseStatusText.textContent = 'Conectado a Supabase - Datos sincronizados';
         
         // Ocultar mensaje después de 3 segundos
         setTimeout(() => {
-            statusDiv.style.display = 'none';
+            DOMCache.supabaseStatus.style.display = 'none';
         }, 3000);
     } else {
-        statusDiv.style.display = 'block';
-        statusDiv.style.backgroundColor = '#fff3cd';
-        statusDiv.style.color = '#856404';
-        statusIcon.textContent = '📴';
-        statusText.textContent = 'Modo offline - Datos guardados localmente';
+        DOMCache.supabaseStatus.style.display = 'block';
+        DOMCache.supabaseStatus.style.backgroundColor = '#fff3cd';
+        DOMCache.supabaseStatus.style.color = '#856404';
+        DOMCache.supabaseStatusIcon.textContent = '📴';
+        DOMCache.supabaseStatusText.textContent = 'Modo offline - Datos guardados localmente';
         
         // Mantener visible en modo offline
     }
@@ -148,7 +231,7 @@ async function initializeBeds() {
     
     if (data.turno) {
         turnoActual = data.turno;
-        document.getElementById('turnoSelect').value = turnoActual;
+        if (DOMCache.turnoSelect) DOMCache.turnoSelect.value = turnoActual;
     }
     
     // Actualizar texto del turno
@@ -156,12 +239,12 @@ async function initializeBeds() {
     
     if (data.enfermeros !== undefined) {
         enfermerosEnTurno = data.enfermeros;
-        document.getElementById('enfermerosEnTurno').value = enfermerosEnTurno;
+        if (DOMCache.enfermerosInput) DOMCache.enfermerosInput.value = enfermerosEnTurno;
     }
     
     if (data.notas) {
         notasTurno = data.notas;
-        document.getElementById('notasTurno').value = notasTurno;
+        if (DOMCache.notasTurnoTextarea) DOMCache.notasTurnoTextarea.value = notasTurno;
     }
 }
 
@@ -205,8 +288,7 @@ const debouncedSaveBeds = debounce(async () => {
 
 // Actualizar indicador visual de guardado
 function updateSaveIndicator() {
-    const indicator = document.getElementById('saveIndicator');
-    if (!indicator) return;
+    if (!DOMCache.saveIndicator) return;
     
     const estados = {
         saved: { text: '✓ Guardado', class: 'saved' },
@@ -215,8 +297,8 @@ function updateSaveIndicator() {
     };
     
     const estado = estados[saveStatus];
-    indicator.textContent = estado.text;
-    indicator.className = `save-indicator ${estado.class}`;
+    DOMCache.saveIndicator.textContent = estado.text;
+    DOMCache.saveIndicator.className = `save-indicator ${estado.class}`;
 }
 
 // Verificar si una cama cambió (para renderizado diferencial)
@@ -292,16 +374,20 @@ function clasificarPaciente(puntos) {
 
 // Renderizar grid de camas con actualización diferencial
 function renderBedsGrid() {
-    const grid = document.getElementById('bedsGrid');
+    if (!DOMCache.bedsGrid) return;
+    const grid = DOMCache.bedsGrid;
     
     // Primera renderización o render forzado: crear todos los elementos
     if (!previousBedsState || grid.children.length === 0) {
-        grid.innerHTML = '';
+        // Usar DocumentFragment para mejor rendimiento
+        const fragment = document.createDocumentFragment();
         beds.forEach((bed, index) => {
             const bedCard = createBedCard(bed, index);
-            grid.appendChild(bedCard);
+            fragment.appendChild(bedCard);
         });
-        previousBedsState = JSON.parse(JSON.stringify(beds));
+        grid.innerHTML = '';
+        grid.appendChild(fragment);
+        previousBedsState = cloneBedsState(beds);
         updateGlobalSummary();
         return;
     }
@@ -315,7 +401,7 @@ function renderBedsGrid() {
         }
     });
     
-    previousBedsState = JSON.parse(JSON.stringify(beds));
+    previousBedsState = cloneBedsState(beds);
     updateGlobalSummary();
 }
 
@@ -330,19 +416,19 @@ function updateGlobalSummary() {
         enfermerosNecesarios += clase.ratio;
     });
     
-    document.getElementById('camasOcupadas').textContent = `${occupied.length}/22`;
-    document.getElementById('tissTotal').textContent = formatNumber(tissTotal);
-    document.getElementById('enfermerosNecesarios').textContent = formatNumber(Math.ceil(enfermerosNecesarios));
-    document.getElementById('enfermerosEnTurnoDisplay').textContent = formatNumber(enfermerosEnTurno);
+    // Usar DOMCache para todas las actualizaciones
+    if (DOMCache.camasOcupadas) DOMCache.camasOcupadas.textContent = `${occupied.length}/22`;
+    if (DOMCache.tissTotal) DOMCache.tissTotal.textContent = formatNumber(tissTotal);
+    if (DOMCache.enfermerosNecesarios) DOMCache.enfermerosNecesarios.textContent = formatNumber(Math.ceil(enfermerosNecesarios));
+    if (DOMCache.enfermerosEnTurnoDisplay) DOMCache.enfermerosEnTurnoDisplay.textContent = formatNumber(enfermerosEnTurno);
     updateTurnoDisplay();
     
     // Mostrar nota solo si faltan enfermeros
     const diferencia = enfermerosEnTurno - Math.ceil(enfermerosNecesarios);
-    const notaDiv = document.getElementById('diferenciaNota');
-    if (diferencia < 0 && enfermerosEnTurno > 0) {
-        notaDiv.textContent = `(Faltan ${Math.abs(diferencia)} según estimado)`;
-    } else {
-        notaDiv.textContent = '';
+    if (DOMCache.diferenciaNota) {
+        DOMCache.diferenciaNota.textContent = (diferencia < 0 && enfermerosEnTurno > 0) 
+            ? `(Faltan ${Math.abs(diferencia)} según estimado)` 
+            : '';
     }
     
     const counts = { clase1: 0, clase2: 0, clase3: 0, clase4: 0 };
@@ -354,57 +440,62 @@ function updateGlobalSummary() {
     });
     
     // Mostrar distribución por clases
-    const distribucionDiv = document.getElementById('distribucionClases');
-    if (distribucionDiv) {
+    if (DOMCache.distribucionClases) {
         if (occupied.length > 0) {
             const partes = [];
             if (counts.clase1 > 0) partes.push(`I: ${counts.clase1}`);
             if (counts.clase2 > 0) partes.push(`II: ${counts.clase2}`);
             if (counts.clase3 > 0) partes.push(`III: ${counts.clase3}`);
             if (counts.clase4 > 0) partes.push(`IV: ${counts.clase4}`);
-            distribucionDiv.textContent = partes.length > 0 ? `Distribución: ${partes.join(' | ')}` : '';
+            DOMCache.distribucionClases.textContent = partes.length > 0 ? `Distribución: ${partes.join(' | ')}` : '';
         } else {
-            distribucionDiv.textContent = '';
+            DOMCache.distribucionClases.textContent = '';
         }
     }
 }
 
 // Función para resetear completamente todos los checkboxes del modal
 function resetearCheckboxes() {
-    const checkboxes = document.querySelectorAll('.modal input[type="checkbox"]');
+    const checkboxes = DOMCache.getModalCheckboxes();
     checkboxes.forEach(checkbox => {
-        // Limpiar tanto la propiedad como el atributo HTML
         checkbox.checked = false;
         checkbox.removeAttribute('checked');
     });
+}
+
+// Sanitizar texto para prevenir XSS
+function sanitizeHTML(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
 }
 
 // Abrir modal
 function openModal(bedIndex) {
     currentBedIndex = bedIndex;
     const bed = beds[bedIndex];
-    const modal = document.getElementById('patientModal');
+    if (!DOMCache.patientModal) return;
     
     // PASO 1: Resetear TODOS los checkboxes primero (limpieza total)
     resetearCheckboxes();
     
     // PASO 2: Limpiar campos de texto
-    document.getElementById('modalTitle').textContent = `Cama ${bed.number}`;
-    document.getElementById('patientName').value = '';
-    document.getElementById('diagnostico').value = '';
-    document.getElementById('observaciones').value = '';
-    document.getElementById('fechaIngreso').value = '';
+    if (DOMCache.modalTitle) DOMCache.modalTitle.textContent = `Cama ${bed.number}`;
+    if (DOMCache.patientName) DOMCache.patientName.value = '';
+    if (DOMCache.diagnostico) DOMCache.diagnostico.value = '';
+    if (DOMCache.observaciones) DOMCache.observaciones.value = '';
+    if (DOMCache.fechaIngreso) DOMCache.fechaIngreso.value = '';
     
     // PASO 3: Cargar datos del paciente (solo si existe)
     if (bed.occupied) {
-        document.getElementById('patientName').value = bed.patientName || '';
-        document.getElementById('diagnostico').value = bed.diagnostico || '';
-        document.getElementById('observaciones').value = bed.observaciones || '';
-        document.getElementById('fechaIngreso').value = bed.fechaIngreso || '';
+        if (DOMCache.patientName) DOMCache.patientName.value = bed.patientName || '';
+        if (DOMCache.diagnostico) DOMCache.diagnostico.value = bed.diagnostico || '';
+        if (DOMCache.observaciones) DOMCache.observaciones.value = bed.observaciones || '';
+        if (DOMCache.fechaIngreso) DOMCache.fechaIngreso.value = bed.fechaIngreso || '';
         
         // PASO 4: Marcar solo las intervenciones guardadas del paciente existente
         if (bed.selectedInterventions && bed.selectedInterventions.length > 0) {
-            const checkboxes = document.querySelectorAll('.modal input[type="checkbox"]');
+            const checkboxes = DOMCache.getModalCheckboxes();
             checkboxes.forEach(checkbox => {
                 const key = checkbox.dataset.points + '-' + checkbox.dataset.category;
                 if (bed.selectedInterventions.includes(key)) {
@@ -414,39 +505,35 @@ function openModal(bedIndex) {
         }
     } else {
         // PASO 5: Si es nueva cama, usar fecha actual por defecto
-        document.getElementById('fechaIngreso').value = new Date().toISOString().split('T')[0];
+        if (DOMCache.fechaIngreso) DOMCache.fechaIngreso.value = new Date().toISOString().split('T')[0];
     }
     
     // PASO 6: Actualizar resultados y abrir modal
     updateModalResults();
-    modal.classList.add('active');
+    DOMCache.patientModal.classList.add('active');
 }
 
 // Cerrar modal
 function closeModal() {
-    const modal = document.getElementById('patientModal');
-    modal.classList.remove('active');
+    if (!DOMCache.patientModal) return;
+    DOMCache.patientModal.classList.remove('active');
     
     // Resetear todos los checkboxes y campos al cerrar
     resetearCheckboxes();
     
     // Limpiar también los campos de texto para evitar cualquier residuo
-    document.getElementById('patientName').value = '';
-    document.getElementById('diagnostico').value = '';
-    document.getElementById('observaciones').value = '';
-    document.getElementById('fechaIngreso').value = '';
+    if (DOMCache.patientName) DOMCache.patientName.value = '';
+    if (DOMCache.diagnostico) DOMCache.diagnostico.value = '';
+    if (DOMCache.observaciones) DOMCache.observaciones.value = '';
+    if (DOMCache.fechaIngreso) DOMCache.fechaIngreso.value = '';
     
     currentBedIndex = null;
 }
 
 // Calcular puntuación del modal
 function calcularPuntuacionModal() {
-    const checkboxes = document.querySelectorAll('.modal input[type="checkbox"]:checked');
-    let total = 0;
-    checkboxes.forEach(checkbox => {
-        total += parseInt(checkbox.dataset.points);
-    });
-    return total;
+    const checkboxes = Array.from(DOMCache.getModalCheckboxes()).filter(cb => cb.checked);
+    return checkboxes.reduce((total, checkbox) => total + parseInt(checkbox.dataset.points), 0);
 }
 
 // Actualizar resultados del modal
@@ -454,15 +541,16 @@ function updateModalResults() {
     const puntos = calcularPuntuacionModal();
     const clasificacion = clasificarPaciente(puntos);
     
-    document.getElementById('scoreNumber').textContent = puntos;
+    if (DOMCache.scoreNumber) DOMCache.scoreNumber.textContent = puntos;
     
-    const classificationDiv = document.getElementById('classification');
-    classificationDiv.className = `classification-modal ${clasificacion.color}`;
-    classificationDiv.innerHTML = `
-        <h3 style="color: inherit; margin-bottom: 0.25rem;">${clasificacion.nombre}</h3>
-        <p style="margin: 0.15rem 0;"><strong>Rango:</strong> ${clasificacion.rango}</p>
-        <p style="margin: 0.25rem 0 0 0; font-weight: 700;"><strong>Ratio:</strong> ${clasificacion.ratioTexto}</p>
-    `;
+    if (DOMCache.classification) {
+        DOMCache.classification.className = `classification-modal ${clasificacion.color}`;
+        DOMCache.classification.innerHTML = `
+            <h3 style="color: inherit; margin-bottom: 0.25rem;">${sanitizeHTML(clasificacion.nombre)}</h3>
+            <p style="margin: 0.15rem 0;"><strong>Rango:</strong> ${sanitizeHTML(clasificacion.rango)}</p>
+            <p style="margin: 0.25rem 0 0 0; font-weight: 700;"><strong>Ratio:</strong> ${sanitizeHTML(clasificacion.ratioTexto)}</p>
+        `;
+    }
 }
 
 // Guardar paciente
@@ -471,7 +559,7 @@ function guardarPaciente() {
     
     const bed = beds[currentBedIndex];
     const puntos = calcularPuntuacionModal();
-    const nombre = document.getElementById('patientName').value.trim();
+    const nombre = DOMCache.patientName ? DOMCache.patientName.value.trim() : '';
     
     // Validación: al menos debe tener nombre o puntaje
     if (!nombre && puntos === 0) {
@@ -481,19 +569,17 @@ function guardarPaciente() {
     
     bed.occupied = true;
     bed.patientName = nombre;
-    bed.diagnostico = document.getElementById('diagnostico').value.trim();
-    bed.observaciones = document.getElementById('observaciones').value.trim();
-    bed.fechaIngreso = document.getElementById('fechaIngreso').value;
+    bed.diagnostico = DOMCache.diagnostico ? DOMCache.diagnostico.value.trim() : '';
+    bed.observaciones = DOMCache.observaciones ? DOMCache.observaciones.value.trim() : '';
+    bed.fechaIngreso = DOMCache.fechaIngreso ? DOMCache.fechaIngreso.value : '';
     bed.tiss = puntos;
     
     if (!bed.fechaIngreso && bed.occupied) {
         bed.fechaIngreso = new Date().toISOString().split('T')[0];
     }
     
-    const checkboxes = document.querySelectorAll('.modal input[type="checkbox"]:checked');
-    bed.selectedInterventions = Array.from(checkboxes).map(cb => 
-        cb.dataset.points + '-' + cb.dataset.category
-    );
+    const checkboxes = Array.from(DOMCache.getModalCheckboxes()).filter(cb => cb.checked);
+    bed.selectedInterventions = checkboxes.map(cb => cb.dataset.points + '-' + cb.dataset.category);
     
     saveBeds();
     renderBedsGrid();
@@ -506,8 +592,7 @@ function guardarPaciente() {
 
 // Mostrar notificación Toast profesional
 function mostrarFeedback(mensaje, tipo = 'success') {
-    const container = document.getElementById('toastContainer');
-    if (!container) return;
+    if (!DOMCache.toastContainer) return;
     
     const toast = document.createElement('div');
     toast.className = `toast ${tipo}`;
@@ -519,12 +604,19 @@ function mostrarFeedback(mensaje, tipo = 'success') {
         info: 'ℹ'
     };
     
-    toast.innerHTML = `
-        <span class="toast-icon">${iconos[tipo] || iconos.success}</span>
-        <span class="toast-message">${mensaje}</span>
-    `;
+    // Usar textContent para seguridad
+    const icon = document.createElement('span');
+    icon.className = 'toast-icon';
+    icon.textContent = iconos[tipo] || iconos.success;
     
-    container.appendChild(toast);
+    const messageSpan = document.createElement('span');
+    messageSpan.className = 'toast-message';
+    messageSpan.textContent = mensaje;
+    
+    toast.appendChild(icon);
+    toast.appendChild(messageSpan);
+    
+    DOMCache.toastContainer.appendChild(toast);
     
     // Auto-remover después de 3 segundos
     setTimeout(() => {
@@ -598,8 +690,172 @@ function limpiarTodo() {
     );
 }
 
+// ========================================
+// FUNCIONALIDAD DE TRANSFERENCIA DE PACIENTES
+// ========================================
+
+// Abrir modal de transferencia
+function abrirModalTransferencia() {
+    if (currentBedIndex === null) return;
+    
+    const bed = beds[currentBedIndex];
+    
+    // Verificar que la cama esté ocupada
+    if (!bed.occupied) {
+        mostrarFeedback('⚠️ No hay paciente en esta cama para transferir', 'warning');
+        return;
+    }
+    
+    // Actualizar título del modal
+    if (DOMCache.transferModalTitle) {
+        DOMCache.transferModalTitle.textContent = `Transferir Paciente: ${bed.patientName || 'Sin nombre'}`;
+    }
+    if (DOMCache.transferDescription) {
+        DOMCache.transferDescription.textContent = `Desde Cama ${bed.number} → Seleccione cama destino:`;
+    }
+    
+    // Renderizar grid de camas disponibles
+    renderBedsSelectionGrid();
+    
+    // Mostrar modal de transferencia
+    if (DOMCache.transferModal) {
+        DOMCache.transferModal.classList.add('active');
+    }
+}
+
+// Cerrar modal de transferencia
+function cerrarModalTransferencia() {
+    if (DOMCache.transferModal) {
+        DOMCache.transferModal.classList.remove('active');
+    }
+}
+
+// Renderizar grid de selección de camas
+function renderBedsSelectionGrid() {
+    if (!DOMCache.bedsSelectionGrid) return;
+    const grid = DOMCache.bedsSelectionGrid;
+    
+    // Usar DocumentFragment para mejor rendimiento
+    const fragment = document.createDocumentFragment();
+    
+    beds.forEach((bed, index) => {
+        // No mostrar la cama actual en la lista
+        if (index === currentBedIndex) return;
+        
+        const bedCard = document.createElement('div');
+        bedCard.className = 'bed-selection-card';
+        
+        if (bed.occupied) {
+            bedCard.classList.add('occupied');
+            bedCard.title = 'Esta cama ya está ocupada';
+            
+            const numberDiv = document.createElement('div');
+            numberDiv.className = 'bed-number-small';
+            numberDiv.textContent = `Cama ${bed.number}`;
+            
+            const statusDiv = document.createElement('div');
+            statusDiv.className = 'bed-status-small';
+            statusDiv.textContent = 'Ocupada';
+            
+            const patientDiv = document.createElement('div');
+            patientDiv.className = 'bed-patient-small';
+            patientDiv.textContent = bed.patientName || 'Paciente';
+            
+            bedCard.appendChild(numberDiv);
+            bedCard.appendChild(statusDiv);
+            bedCard.appendChild(patientDiv);
+        } else {
+            bedCard.classList.add('available');
+            bedCard.title = `Transferir a Cama ${bed.number}`;
+            
+            const numberDiv = document.createElement('div');
+            numberDiv.className = 'bed-number-small';
+            numberDiv.textContent = `Cama ${bed.number}`;
+            
+            const statusDiv = document.createElement('div');
+            statusDiv.className = 'bed-status-small';
+            statusDiv.textContent = 'Disponible';
+            
+            const iconDiv = document.createElement('div');
+            iconDiv.className = 'bed-icon-small';
+            iconDiv.textContent = '✓';
+            
+            bedCard.appendChild(numberDiv);
+            bedCard.appendChild(statusDiv);
+            bedCard.appendChild(iconDiv);
+            
+            // Solo agregar event listener si está disponible
+            bedCard.addEventListener('click', () => confirmarTransferencia(index));
+        }
+        
+        fragment.appendChild(bedCard);
+    });
+    
+    grid.innerHTML = '';
+    grid.appendChild(fragment);
+}
+
+// Confirmar y ejecutar transferencia
+function confirmarTransferencia(camaDestinoIndex) {
+    if (currentBedIndex === null) return;
+    
+    const bedOrigen = beds[currentBedIndex];
+    const bedDestino = beds[camaDestinoIndex];
+    
+    // Verificar que la cama destino esté libre
+    if (bedDestino.occupied) {
+        mostrarFeedback('⚠️ La cama destino ya está ocupada', 'warning');
+        return;
+    }
+    
+    const nombrePaciente = bedOrigen.patientName || 'el paciente';
+    
+    confirmarAccion(
+        `¿Confirma transferir a ${nombrePaciente} de la Cama ${bedOrigen.number} a la Cama ${bedDestino.number}?`,
+        () => {
+            // Copiar todos los datos del paciente a la cama destino
+            beds[camaDestinoIndex] = {
+                number: bedDestino.number, // Mantener el número de cama correcto
+                occupied: true,
+                patientName: bedOrigen.patientName,
+                diagnostico: bedOrigen.diagnostico,
+                observaciones: bedOrigen.observaciones,
+                fechaIngreso: bedOrigen.fechaIngreso,
+                tiss: bedOrigen.tiss,
+                selectedInterventions: [...bedOrigen.selectedInterventions] // Copia profunda del array
+            };
+            
+            // Liberar la cama original
+            beds[currentBedIndex] = {
+                number: bedOrigen.number,
+                occupied: false,
+                patientName: '',
+                diagnostico: '',
+                observaciones: '',
+                fechaIngreso: '',
+                tiss: 0,
+                selectedInterventions: []
+            };
+            
+            // Guardar cambios
+            saveBeds();
+            renderBedsGrid();
+            
+            // Cerrar modales
+            cerrarModalTransferencia();
+            closeModal();
+            
+            // Mostrar confirmación
+            mostrarFeedback(`✓ Paciente transferido de Cama ${bedOrigen.number} a Cama ${bedDestino.number}`, 'success');
+        }
+    );
+}
+
 // Event Listeners
 document.addEventListener('DOMContentLoaded', async function() {
+    // Inicializar cache de elementos DOM
+    DOMCache.init();
+    
     // Inicializar Supabase
     await supabaseService.init();
     updateSupabaseStatus();
@@ -611,60 +867,92 @@ document.addEventListener('DOMContentLoaded', async function() {
     await initializeBeds();
     renderBedsGrid();
     
-    document.getElementById('closeModal').addEventListener('click', closeModal);
-    document.getElementById('cancelarBtn').addEventListener('click', closeModal);
-    document.getElementById('guardarPacienteBtn').addEventListener('click', guardarPaciente);
-    document.getElementById('liberarCamaBtn').addEventListener('click', liberarCama);
-    document.getElementById('limpiarTodoBtn').addEventListener('click', limpiarTodo);
+    // Event listeners con verificación de existencia
+    const closeModalBtn = document.getElementById('closeModal');
+    const cancelarBtn = document.getElementById('cancelarBtn');
+    const guardarPacienteBtn = document.getElementById('guardarPacienteBtn');
+    const transferirPacienteBtn = document.getElementById('transferirPacienteBtn');
+    const liberarCamaBtn = document.getElementById('liberarCamaBtn');
+    const limpiarTodoBtn = document.getElementById('limpiarTodoBtn');
+    const closeTransferModalBtn = document.getElementById('closeTransferModal');
+    const cancelarTransferenciaBtn = document.getElementById('cancelarTransferenciaBtn');
+    const imprimirBtn = document.getElementById('imprimirBtn');
     
-    document.getElementById('turnoSelect').addEventListener('change', function(e) {
-        turnoActual = e.target.value;
-        updateTurnoDisplay();
-        debouncedSaveBeds();
-    });
+    if (closeModalBtn) closeModalBtn.addEventListener('click', closeModal);
+    if (cancelarBtn) cancelarBtn.addEventListener('click', closeModal);
+    if (guardarPacienteBtn) guardarPacienteBtn.addEventListener('click', guardarPaciente);
+    if (transferirPacienteBtn) transferirPacienteBtn.addEventListener('click', abrirModalTransferencia);
+    if (liberarCamaBtn) liberarCamaBtn.addEventListener('click', liberarCama);
+    if (limpiarTodoBtn) limpiarTodoBtn.addEventListener('click', limpiarTodo);
+    if (closeTransferModalBtn) closeTransferModalBtn.addEventListener('click', cerrarModalTransferencia);
+    if (cancelarTransferenciaBtn) cancelarTransferenciaBtn.addEventListener('click', cerrarModalTransferencia);
+    if (imprimirBtn) imprimirBtn.addEventListener('click', imprimirReporte);
     
-    document.getElementById('enfermerosEnTurno').addEventListener('input', function(e) {
-        let valor = parseInt(e.target.value) || 0;
-        // Evitar valores negativos
-        if (valor < 0) {
-            valor = 0;
-            e.target.value = 0;
-        }
-        enfermerosEnTurno = valor;
-        updateGlobalSummary();
-        debouncedSaveBeds();
-    });
-    
-    document.getElementById('notasTurno').addEventListener('input', function(e) {
-        notasTurno = e.target.value;
-        debouncedSaveBeds();
-    });
-    
-    document.getElementById('imprimirBtn').addEventListener('click', imprimirReporte);
-    
-    document.getElementById('patientModal').addEventListener('click', function(e) {
-        if (e.target === this) closeModal();
-    });
-    
-    const tabButtons = document.querySelectorAll('.tab-btn');
-    tabButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            const tabName = this.dataset.tab;
-            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-            document.querySelectorAll('.tab-panel').forEach(panel => panel.classList.remove('active'));
-            this.classList.add('active');
-            document.querySelector(`.tab-panel[data-tab="${tabName}"]`).classList.add('active');
+    // Cerrar modales al hacer click fuera
+    if (DOMCache.transferModal) {
+        DOMCache.transferModal.addEventListener('click', function(e) {
+            if (e.target === this) cerrarModalTransferencia();
         });
+    }
+    
+    if (DOMCache.patientModal) {
+        DOMCache.patientModal.addEventListener('click', function(e) {
+            if (e.target === this) closeModal();
+        });
+    }
+    
+    // Event listeners con DOMCache
+    if (DOMCache.turnoSelect) {
+        DOMCache.turnoSelect.addEventListener('change', function(e) {
+            turnoActual = e.target.value;
+            updateTurnoDisplay();
+            debouncedSaveBeds();
+        });
+    }
+    
+    if (DOMCache.enfermerosInput) {
+        DOMCache.enfermerosInput.addEventListener('input', function(e) {
+            let valor = parseInt(e.target.value) || 0;
+            // Evitar valores negativos
+            if (valor < 0) {
+                valor = 0;
+                e.target.value = 0;
+            }
+            enfermerosEnTurno = valor;
+            updateGlobalSummary();
+            debouncedSaveBeds();
+        });
+    }
+    
+    if (DOMCache.notasTurnoTextarea) {
+        DOMCache.notasTurnoTextarea.addEventListener('input', function(e) {
+            notasTurno = e.target.value;
+            debouncedSaveBeds();
+        });
+    }
+    
+    // Delegación de eventos para tabs
+    document.querySelector('.tabs-navigation')?.addEventListener('click', function(e) {
+        const tabBtn = e.target.closest('.tab-btn');
+        if (!tabBtn) return;
+        
+        const tabName = tabBtn.dataset.tab;
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+        document.querySelectorAll('.tab-panel').forEach(panel => panel.classList.remove('active'));
+        tabBtn.classList.add('active');
+        document.querySelector(`.tab-panel[data-tab="${tabName}"]`)?.classList.add('active');
     });
     
-    const checkboxes = document.querySelectorAll('.modal input[type="checkbox"]');
-    checkboxes.forEach(checkbox => {
-        checkbox.addEventListener('change', updateModalResults);
+    // Delegación de eventos para checkboxes del modal
+    document.querySelector('.modal')?.addEventListener('change', function(e) {
+        if (e.target.type === 'checkbox') {
+            updateModalResults();
+        }
     });
     
     // Atajos de teclado
     document.addEventListener('keydown', function(e) {
-        const modalAbierto = document.getElementById('patientModal').classList.contains('active');
+        const modalAbierto = DOMCache.patientModal?.classList.contains('active');
         
         // ESC para cerrar modal
         if (e.key === 'Escape' && modalAbierto) {

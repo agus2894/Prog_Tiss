@@ -3,28 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Sistema de gestión de UTI basado en el score TISS (Therapeutic Intervention Scoring System). Herramienta para calcular requerimientos de enfermería en unidades de terapia intensiva.">
+    <meta name="keywords" content="TISS, UTI, Terapia Intensiva, Score, Enfermeria, Hospital">
+    <meta name="theme-color" content="#2563eb">
     <title>Calculadora TISS - Gestión de UTI</title>
+    
+    <!-- Preconnect para mejorar performance -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="container">
+    <div class="container" role="main">
         <!-- Disclaimer Principal -->
-        <div class="disclaimer-header">
-            <span class="warning-icon">⚠️</span>
+        <div class="disclaimer-header" role="alert" aria-live="polite">
+            <span class="warning-icon" aria-hidden="true">⚠️</span>
             <span><strong>HERRAMIENTA INFORMATIVA:</strong> No toma decisiones operativas. Los datos son referenciales.</span>
         </div>
 
         <!-- Estado de Conexión Supabase -->
-        <div id="supabaseStatus" class="supabase-status" style="display: none; padding: 0.5rem 1rem; margin: 0.5rem 0; border-radius: 8px; font-size: 0.85rem; text-align: center;">
-            <span id="supabaseStatusIcon">🔄</span>
+        <div id="supabaseStatus" class="supabase-status" role="status" aria-live="polite" style="display: none; padding: 0.5rem 1rem; margin: 0.5rem 0; border-radius: 8px; font-size: 0.85rem; text-align: center;">
+            <span id="supabaseStatusIcon" aria-hidden="true">🔄</span>
             <span id="supabaseStatusText">Conectando...</span>
         </div>
 
         <!-- Indicador de Guardado -->
-        <div id="saveIndicator" class="save-indicator saved">✓ Guardado</div>
+        <div id="saveIndicator" class="save-indicator saved" role="status" aria-live="polite" aria-atomic="true">✓ Guardado</div>
 
         <header>
             <h1>Gestión de UTI - TISS</h1>
@@ -32,7 +39,7 @@
             <div class="header-controls">
                 <div class="turno-selector">
                     <label for="turnoSelect">⏰ Turno:</label>
-                    <select id="turnoSelect">
+                    <select id="turnoSelect" aria-label="Seleccionar turno de trabajo">
                         <option value="mañana">Mañana (7-14hs)</option>
                         <option value="tarde">Tarde (14-21hs)</option>
                         <option value="noche">Noche (21-07hs)</option>
@@ -41,13 +48,13 @@
                 </div>
                 <div class="enfermeros-input">
                     <label for="enfermerosEnTurno">👥 Enfermeros en turno:</label>
-                    <input type="number" id="enfermerosEnTurno" min="0" max="30" value="0" />
+                    <input type="number" id="enfermerosEnTurno" min="0" max="30" value="0" aria-label="Número de enfermeros en turno" />
                 </div>
             </div>
         </header>
 
         <!-- Resumen Global -->
-        <div class="global-summary">
+        <div class="global-summary" role="region" aria-label="Resumen global de UTI">
             <div class="summary-card">
                 <div class="summary-icon">🛏️</div>
                 <div class="summary-content">
@@ -84,16 +91,16 @@
         <!-- Notas del Turno -->
         <div class="notas-turno-section">
             <label for="notasTurno">📝 Notas del Turno:</label>
-            <textarea id="notasTurno" placeholder="Observaciones generales del turno, cambios importantes, situaciones especiales..."></textarea>
+            <textarea id="notasTurno" placeholder="Observaciones generales del turno, cambios importantes, situaciones especiales..." aria-label="Notas del turno"></textarea>
         </div>
 
         <!-- Mapa de Camas -->
-        <div class="beds-section">
+        <section class="beds-section" aria-labelledby="beds-heading">
             <div class="section-header">
-                <h2>Mapa de Camas UTI</h2>
+                <h2 id="beds-heading">Mapa de Camas UTI</h2>
                 <div class="section-actions">
-                    <button id="imprimirBtn" class="btn-primary-small" title="Imprimir reporte del turno actual">🖨️ Imprimir</button>
-                    <button id="limpiarTodoBtn" class="btn-secondary-small" title="Liberar todas las camas (no se puede deshacer)">🗑️ Limpiar Todo</button>
+                    <button id="imprimirBtn" class="btn-primary-small" title="Imprimir reporte del turno actual" aria-label="Imprimir reporte">🖨️ Imprimir</button>
+                    <button id="limpiarTodoBtn" class="btn-secondary-small" title="Liberar todas las camas (no se puede deshacer)" aria-label="Limpiar todas las camas">🗑️ Limpiar Todo</button>
                 </div>
             </div>
             
@@ -128,12 +135,12 @@
 
 
         <!-- Modal para editar paciente -->
-        <div id="patientModal" class="modal">
+        <div id="patientModal" class="modal" role="dialog" aria-labelledby="modalTitle" aria-modal="true" aria-hidden="true">
             <div class="modal-content">
                 <div class="modal-header">
                     <div class="modal-header-top">
                         <h2 id="modalTitle">Cama #1</h2>
-                        <button class="modal-close" id="closeModal">&times;</button>
+                        <button class="modal-close" id="closeModal" aria-label="Cerrar modal">&times;</button>
                     </div>
                     
                     <!-- Datos del Paciente en Header -->
@@ -141,23 +148,23 @@
                         <div class="patient-info-row">
                             <label class="info-field-compact">
                                 <span>Paciente:</span>
-                                <input type="text" id="patientName" placeholder="Nombre completo">
+                                <input type="text" id="patientName" placeholder="Nombre completo" aria-label="Nombre del paciente" autocomplete="off">
                             </label>
                             <label class="info-field-compact">
                                 <span>Ingreso:</span>
-                                <input type="date" id="fechaIngreso">
+                                <input type="date" id="fechaIngreso" aria-label="Fecha de ingreso">
                             </label>
                         </div>
                         <div class="patient-info-row">
                             <label class="info-field-compact full-width">
                                 <span>Diagnóstico:</span>
-                                <input type="text" id="diagnostico" placeholder="Ej: Sepsis severa, IAM, EPOC descompensado">
+                                <input type="text" id="diagnostico" placeholder="Ej: Sepsis severa, IAM, EPOC descompensado" aria-label="Diagnóstico del paciente" autocomplete="off">
                             </label>
                         </div>
                         <div class="patient-info-row">
                             <label class="info-field-compact full-width">
                                 <span>Observaciones:</span>
-                                <input type="text" id="observaciones" placeholder="Notas adicionales, alergias, evolución...">
+                                <input type="text" id="observaciones" placeholder="Notas adicionales, alergias, evolución..." aria-label="Observaciones del paciente" autocomplete="off">
                             </label>
                         </div>
                     </div>
@@ -165,22 +172,23 @@
                 
                 <div class="modal-body">
                     <!-- Columna 1: Resultados TISS (Estrecha, Fija) -->
-                    <div class="results-panel-modal" id="resultsPanel">
+                    <div class="results-panel-modal" id="resultsPanel" role="region" aria-label="Resultado del cálculo TISS">
                         <h3>📊 Resultado TISS</h3>
                         
                         <div class="score-display-modal" id="scoreDisplay">
-                            <div class="score-number" id="scoreNumber">0</div>
+                            <div class="score-number" id="scoreNumber" aria-live="polite" aria-atomic="true">0</div>
                             <div class="score-label">Puntos TISS</div>
                         </div>
 
-                        <div class="classification-modal" id="classification">
+                        <div class="classification-modal" id="classification" aria-live="polite">
                             <p style="text-align: center; color: #6b7280; font-size: 0.8rem;">Seleccione intervenciones</p>
                         </div>
                         
                         <div class="action-buttons-modal">
-                            <button id="guardarPacienteBtn" class="btn-primary" title="Guardar paciente y cerrar (Ctrl+Enter)">💾 Guardar</button>
-                            <button id="liberarCamaBtn" class="btn-danger" title="Liberar esta cama y eliminar todos los datos del paciente">🗑️ Liberar</button>
-                            <button id="cancelarBtn" class="btn-secondary" title="Cancelar sin guardar cambios (Esc)">Cancelar</button>
+                            <button id="guardarPacienteBtn" class="btn-primary" title="Guardar paciente y cerrar (Ctrl+Enter)" aria-label="Guardar paciente">💾 Guardar</button>
+                            <button id="transferirPacienteBtn" class="btn-warning" title="Transferir paciente a otra cama" aria-label="Transferir paciente">🔄 Transferir</button>
+                            <button id="liberarCamaBtn" class="btn-danger" title="Liberar esta cama y eliminar todos los datos del paciente" aria-label="Liberar cama">🗑️ Liberar</button>
+                            <button id="cancelarBtn" class="btn-secondary" title="Cancelar sin guardar cambios (Esc)" aria-label="Cancelar">Cancelar</button>
                         </div>
                     </div>
 
@@ -402,8 +410,27 @@
         </footer>
     </div>
 
+    <!-- Modal de Transferencia -->
+    <div id="transferModal" class="modal" role="dialog" aria-labelledby="transferModalTitle" aria-modal="true" aria-hidden="true">
+        <div class="modal-content transfer-modal-content">
+            <div class="modal-header">
+                <h2 id="transferModalTitle">Transferir Paciente</h2>
+                <button class="modal-close" id="closeTransferModal" aria-label="Cerrar modal de transferencia">&times;</button>
+            </div>
+            <div class="modal-body transfer-modal-body">
+                <p id="transferDescription" class="transfer-description">Seleccione la cama destino:</p>
+                <div id="bedsSelectionGrid" class="beds-selection-grid" role="list" aria-label="Camas disponibles para transferencia">
+                    <!-- Se generará dinámicamente -->
+                </div>
+                <div class="transfer-actions">
+                    <button id="cancelarTransferenciaBtn" class="btn-secondary" aria-label="Cancelar transferencia">Cancelar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Contenedor de notificaciones Toast -->
-    <div id="toastContainer" class="toast-container"></div>
+    <div id="toastContainer" class="toast-container" role="status" aria-live="polite" aria-atomic="true"></div>
 
     <!-- Supabase Client -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
