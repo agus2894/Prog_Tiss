@@ -129,10 +129,13 @@ const DOMCache = {
     
     // Obtener checkboxes del modal (se actualizan dinámicamente)
     getModalCheckboxes() {
-        if (!this.modalCheckboxes) {
-            this.modalCheckboxes = document.querySelectorAll('.modal input[type="checkbox"]');
-        }
-        return this.modalCheckboxes;
+        // Siempre obtener checkboxes frescos para evitar problemas de caché
+        return document.querySelectorAll('.modal input[type="checkbox"]');
+    },
+    
+    // Invalidar cache de checkboxes (llamar cuando sea necesario refrescar)
+    invalidateCheckboxCache() {
+        this.modalCheckboxes = null;
     }
 };
 
@@ -456,10 +459,13 @@ function updateGlobalSummary() {
 
 // Función para resetear completamente todos los checkboxes del modal
 function resetearCheckboxes() {
-    const checkboxes = DOMCache.getModalCheckboxes();
+    // Obtener checkboxes frescos del DOM (sin caché)
+    const checkboxes = document.querySelectorAll('.modal input[type="checkbox"]');
     checkboxes.forEach(checkbox => {
         checkbox.checked = false;
         checkbox.removeAttribute('checked');
+        // Forzar actualización del DOM
+        checkbox.defaultChecked = false;
     });
 }
 
@@ -476,7 +482,8 @@ function openModal(bedIndex) {
     const bed = beds[bedIndex];
     if (!DOMCache.patientModal) return;
     
-    // PASO 1: Resetear TODOS los checkboxes primero (limpieza total)
+    // PASO 1: Invalidar caché y resetear TODOS los checkboxes primero (limpieza total)
+    DOMCache.invalidateCheckboxCache();
     resetearCheckboxes();
     
     // PASO 2: Limpiar campos de texto
@@ -494,15 +501,20 @@ function openModal(bedIndex) {
         if (DOMCache.fechaIngreso) DOMCache.fechaIngreso.value = bed.fechaIngreso || '';
         
         // PASO 4: Marcar solo las intervenciones guardadas del paciente existente
-        if (bed.selectedInterventions && bed.selectedInterventions.length > 0) {
-            const checkboxes = DOMCache.getModalCheckboxes();
-            checkboxes.forEach(checkbox => {
-                const key = checkbox.dataset.points + '-' + checkbox.dataset.category;
-                if (bed.selectedInterventions.includes(key)) {
-                    checkbox.checked = true;
-                }
-            });
-        }
+        // Usar setTimeout para asegurar que el DOM está completamente limpio antes de marcar
+        setTimeout(() => {
+            if (bed.selectedInterventions && bed.selectedInterventions.length > 0) {
+                const checkboxes = document.querySelectorAll('.modal input[type="checkbox"]');
+                checkboxes.forEach(checkbox => {
+                    const key = checkbox.dataset.points + '-' + checkbox.dataset.category;
+                    if (bed.selectedInterventions.includes(key)) {
+                        checkbox.checked = true;
+                    }
+                });
+                // Actualizar resultados después de marcar checkboxes
+                updateModalResults();
+            }
+        }, 0);
     } else {
         // PASO 5: Si es nueva cama, usar fecha actual por defecto
         if (DOMCache.fechaIngreso) DOMCache.fechaIngreso.value = new Date().toISOString().split('T')[0];
