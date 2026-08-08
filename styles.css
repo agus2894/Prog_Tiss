@@ -1551,17 +1551,24 @@ footer p {
     font-weight: 600;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     z-index: 2000;
+    opacity: 0;
     transition: all 0.3s ease;
     pointer-events: none;
 }
 
 .save-indicator.saving {
     background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    opacity: 1;
     animation: pulse 1s ease-in-out infinite;
+}
+
+.save-indicator.saved {
+    opacity: 1;
 }
 
 .save-indicator.pending {
     background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+    opacity: 1;
 }
 
 /* Notificaciones Toast profesionales */
@@ -3479,49 +3486,7 @@ footer p {
     }
 }
 
-/* Indicador de guardado */
-.save-indicator {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    padding: 0.75rem 1.25rem;
-    border-radius: 8px;
-    font-size: 0.9rem;
-    font-weight: 600;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    z-index: 9999;
-    transition: all 0.3s ease;
-    backdrop-filter: blur(10px);
-}
 
-.save-indicator.saved {
-    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-    color: white;
-    opacity: 0.9;
-}
-
-.save-indicator.saving {
-    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-    color: white;
-    animation: pulseIndicator 1.5s ease-in-out infinite;
-}
-
-.save-indicator.pending {
-    background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
-    color: white;
-    opacity: 0.85;
-}
-
-@keyframes pulseIndicator {
-    0%, 100% { 
-        opacity: 1;
-        transform: scale(1);
-    }
-    50% { 
-        opacity: 0.7;
-        transform: scale(0.98);
-    }
-}
 
 /* Sistema de notificaciones Toast */
 .toast-container {
