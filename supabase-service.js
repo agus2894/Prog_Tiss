@@ -36,14 +36,21 @@ class SupabaseService {
         }
     }
 
-    // Guardar estado completo de las camas
+    // Guardar estado completo de las camas con retry logic
     async saveBeds(beds, turno, enfermeros, notas) {
         if (this.offlineMode || !this.initialized) {
             console.log('📴 Modo offline: guardando en localStorage');
             return this._saveToLocalStorage(beds, turno, enfermeros, notas);
         }
 
-        try {
+        // Intentar con retry automático
+        return await this._saveWithRetry(beds, turno, enfermeros, notas, 3);
+    }
+
+    // Método interno con retry logic
+    async _saveWithRetry(beds, turno, enfermeros, notas, maxRetries) {
+        for (let attempt = 1; attempt <= maxRetries; attempt++) {
+            try {
             // Preparar datos para Supabase
             const data = {
                 beds: beds,
@@ -77,27 +84,43 @@ class SupabaseService {
                 if (insertError) throw insertError;
             }
 
-            console.log('✅ Datos guardados en Supabase');
-            
-            // También guardar en localStorage como respaldo
-            this._saveToLocalStorage(beds, turno, enfermeros, notas);
-            
-            return { success: true };
-        } catch (error) {
-            console.error('❌ Error guardando en Supabase:', error);
-            // Fallback a localStorage
-            return this._saveToLocalStorage(beds, turno, enfermeros, notas);
+                console.log('✅ Datos guardados en Supabase');
+                
+                // También guardar en localStorage como respaldo
+                this._saveToLocalStorage(beds, turno, enfermeros, notas);
+                
+                return { success: true };
+            } catch (error) {
+                console.error(`❌ Error en intento ${attempt}/${maxRetries}:`, error);
+                
+                // Si no es el último intento, esperar antes de reintentar
+                if (attempt < maxRetries) {
+                    const waitTime = Math.min(1000 * Math.pow(2, attempt - 1), 5000); // Exponential backoff: 1s, 2s, 4s (max 5s)
+                    console.log(`⏳ Reintentando en ${waitTime}ms...`);
+                    await new Promise(resolve => setTimeout(resolve, waitTime));
+                } else {
+                    // Último intento falló, usar localStorage
+                    console.warn('⚠️ Todos los reintentos fallaron, usando localStorage');
+                    return this._saveToLocalStorage(beds, turno, enfermeros, notas);
+                }
+            }
         }
     }
 
-    // Cargar estado de las camas
+    // Cargar estado de las camas con retry logic
     async loadBeds() {
         if (this.offlineMode || !this.initialized) {
             console.log('📴 Modo offline: cargando desde localStorage');
             return this._loadFromLocalStorage();
         }
 
-        try {
+        return await this._loadWithRetry(3);
+    }
+
+    // Método interno para cargar con retry
+    async _loadWithRetry(maxRetries) {
+        for (let attempt = 1; attempt <= maxRetries; attempt++) {
+            try {
             const { data, error } = await this.supabase
                 .from('uti_state')
                 .select('*')
@@ -114,29 +137,38 @@ class SupabaseService {
                 throw error;
             }
 
-            if (data) {
-                console.log('✅ Datos cargados desde Supabase');
+                if (data) {
+                    console.log('✅ Datos cargados desde Supabase');
+                    
+                    // También guardar en localStorage como respaldo
+                    this._saveToLocalStorage(
+                        data.beds || [],
+                        data.turno || 'mañana',
+                        data.enfermeros || 0,
+                        data.notas || ''
+                    );
+
+                    return {
+                        beds: data.beds || [],
+                        turno: data.turno || 'mañana',
+                        enfermeros: data.enfermeros || 0,
+                        notas: data.notas || ''
+                    };
+                }
+
+                return this._loadFromLocalStorage();
+            } catch (error) {
+                console.error(`❌ Error en intento ${attempt}/${maxRetries}:`, error);
                 
-                // También guardar en localStorage como respaldo
-                this._saveToLocalStorage(
-                    data.beds || [],
-                    data.turno || 'mañana',
-                    data.enfermeros || 0,
-                    data.notas || ''
-                );
-
-                return {
-                    beds: data.beds || [],
-                    turno: data.turno || 'mañana',
-                    enfermeros: data.enfermeros || 0,
-                    notas: data.notas || ''
-                };
+                if (attempt < maxRetries) {
+                    const waitTime = Math.min(1000 * Math.pow(2, attempt - 1), 5000);
+                    console.log(`⏳ Reintentando en ${waitTime}ms...`);
+                    await new Promise(resolve => setTimeout(resolve, waitTime));
+                } else {
+                    console.warn('⚠️ Todos los reintentos fallaron, usando localStorage');
+                    return this._loadFromLocalStorage();
+                }
             }
-
-            return this._loadFromLocalStorage();
-        } catch (error) {
-            console.error('❌ Error cargando desde Supabase:', error);
-            return this._loadFromLocalStorage();
         }
     }
 

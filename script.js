@@ -34,10 +34,11 @@ const clasificaciones = {
     }
 };
 
-// Utilidad: Formatear números con separadores de miles
+// Utilidad: Formatear números con separadores de miles (optimizado con Intl)
+const numberFormatter = new Intl.NumberFormat('es-AR');
 function formatNumber(num) {
     if (num === null || num === undefined || isNaN(num)) return '0';
-    return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    return numberFormatter.format(num);
 }
 
 // Utilidad: Debounce para optimizar guardado
