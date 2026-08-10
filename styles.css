@@ -1689,7 +1689,6 @@ footer p {
     header .subtitle,
     .save-indicator,
     .supabase-status,
-    .notas-turno-section,
     #distribucionClases {
         display: none !important;
     }
@@ -1698,6 +1697,40 @@ footer p {
         max-width: 100%;
         padding: 0;
         box-shadow: none;
+    }
+    
+    /* Notas del Turno para impresión */
+    .notas-turno-section {
+        display: block !important;
+        background: #f8fafc;
+        border: 2px solid #0ea5e9;
+        border-radius: 6px;
+        padding: 0.6rem;
+        margin-bottom: 0.6rem;
+        page-break-inside: avoid;
+    }
+    
+    .notas-turno-section label {
+        display: block;
+        font-weight: 700;
+        font-size: 0.9rem;
+        color: #0c4a6e;
+        margin-bottom: 0.3rem;
+    }
+    
+    .notas-turno-section textarea {
+        display: block;
+        width: 100%;
+        min-height: 50px;
+        padding: 0.4rem;
+        border: 1px solid #cbd5e1;
+        border-radius: 4px;
+        font-family: 'Inter', sans-serif;
+        font-size: 0.85rem;
+        line-height: 1.4;
+        color: #1e293b;
+        background: white;
+        resize: none;
     }
     
     /* Header profesional */
@@ -2781,7 +2814,6 @@ footer p {
     header .subtitle,
     .save-indicator,
     .supabase-status,
-    .notas-turno-section,
     #distribucionClases {
         display: none !important;
     }
@@ -2790,6 +2822,40 @@ footer p {
         max-width: 100%;
         padding: 0;
         box-shadow: none;
+    }
+    
+    /* Notas del Turno para impresión */
+    .notas-turno-section {
+        display: block !important;
+        background: #f8fafc;
+        border: 2px solid #0ea5e9;
+        border-radius: 6px;
+        padding: 0.6rem;
+        margin-bottom: 0.6rem;
+        page-break-inside: avoid;
+    }
+    
+    .notas-turno-section label {
+        display: block;
+        font-weight: 700;
+        font-size: 0.9rem;
+        color: #0c4a6e;
+        margin-bottom: 0.3rem;
+    }
+    
+    .notas-turno-section textarea {
+        display: block;
+        width: 100%;
+        min-height: 50px;
+        padding: 0.4rem;
+        border: 1px solid #cbd5e1;
+        border-radius: 4px;
+        font-family: 'Inter', sans-serif;
+        font-size: 0.85rem;
+        line-height: 1.4;
+        color: #1e293b;
+        background: white;
+        resize: none;
     }
     
     /* Header profesional */
