@@ -1,4 +1,4 @@
-# 🏥 TISS Web – Sistema de Gestión para UTI
+# 🏥 TISS Web – Sistema de Gestión de Camas
 
 ## 🌐 Acceso Directo
 
