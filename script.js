@@ -34,6 +34,11 @@ const clasificaciones = {
     }
 };
 
+// Constantes de configuración de camas
+const DEFAULT_NUM_CAMAS = 22;
+const MIN_CAMAS = 1;
+const MAX_CAMAS = 60;
+
 // Utilidad: Formatear números con separadores de miles (optimizado con Intl)
 const numberFormatter = new Intl.NumberFormat('es-AR');
 function formatNumber(num) {
@@ -82,6 +87,19 @@ const DOMCache = {
     distribucionClases: null,
     patientModal: null,
     transferModal: null,
+    configModal: null,
+    configModalTitle: null,
+    numCamasInput: null,
+    btnDecrementarCamas: null,
+    btnIncrementarCamas: null,
+    configCurrentTotal: null,
+    configCurrentOccupied: null,
+    configCurrentAvailable: null,
+    configWarning: null,
+    guardarCapacidadBtn: null,
+    cancelarConfigBtn: null,
+    closeConfigModal: null,
+    configCamasBtn: null,
     modalTitle: null,
     patientName: null,
     diagnostico: null,
@@ -114,6 +132,19 @@ const DOMCache = {
         this.distribucionClases = document.getElementById('distribucionClases');
         this.patientModal = document.getElementById('patientModal');
         this.transferModal = document.getElementById('transferModal');
+        this.configModal = document.getElementById('configModal');
+        this.configModalTitle = document.getElementById('configModalTitle');
+        this.numCamasInput = document.getElementById('numCamasInput');
+        this.btnDecrementarCamas = document.getElementById('btnDecrementarCamas');
+        this.btnIncrementarCamas = document.getElementById('btnIncrementarCamas');
+        this.configCurrentTotal = document.getElementById('configCurrentTotal');
+        this.configCurrentOccupied = document.getElementById('configCurrentOccupied');
+        this.configCurrentAvailable = document.getElementById('configCurrentAvailable');
+        this.configWarning = document.getElementById('configWarning');
+        this.guardarCapacidadBtn = document.getElementById('guardarCapacidadBtn');
+        this.cancelarConfigBtn = document.getElementById('cancelarConfigBtn');
+        this.closeConfigModal = document.getElementById('closeConfigModal');
+        this.configCamasBtn = document.getElementById('configCamasBtn');
         this.modalTitle = document.getElementById('modalTitle');
         this.patientName = document.getElementById('patientName');
         this.diagnostico = document.getElementById('diagnostico');
@@ -210,9 +241,9 @@ function calcularDiasInternado(fechaIngreso) {
     }
 }
 
-// Inicializar 22 camas
+// Inicializar camas (dinámico con fallback por defecto)
 async function initializeBeds() {
-    beds = Array.from({ length: 22 }, (_, i) => ({
+    beds = Array.from({ length: DEFAULT_NUM_CAMAS }, (_, i) => ({
         number: i + 1,
         occupied: false,
         patientName: '',
@@ -421,7 +452,7 @@ function updateGlobalSummary() {
     });
     
     // Usar DOMCache para todas las actualizaciones
-    if (DOMCache.camasOcupadas) DOMCache.camasOcupadas.textContent = `${occupied.length}/22`;
+    if (DOMCache.camasOcupadas) DOMCache.camasOcupadas.textContent = `${occupied.length}/${beds.length}`;
     if (DOMCache.tissTotal) DOMCache.tissTotal.textContent = formatNumber(tissTotal);
     if (DOMCache.enfermerosNecesarios) DOMCache.enfermerosNecesarios.textContent = formatNumber(Math.ceil(enfermerosNecesarios));
     if (DOMCache.enfermerosEnTurnoDisplay) DOMCache.enfermerosEnTurnoDisplay.textContent = formatNumber(enfermerosEnTurno);
@@ -685,7 +716,8 @@ function limpiarTodo() {
     confirmarAccion(
         '¿Está seguro de liberar TODAS las camas? Esta acción no se puede deshacer.',
         () => {
-            beds = Array.from({ length: 22 }, (_, i) => ({
+            const totalCamas = beds.length || DEFAULT_NUM_CAMAS;
+            beds = Array.from({ length: totalCamas }, (_, i) => ({
                 number: i + 1,
                 occupied: false,
                 patientName: '',
@@ -864,6 +896,118 @@ function confirmarTransferencia(camaDestinoIndex) {
     );
 }
 
+// ========================================
+// FUNCIONALIDAD DE CONFIGURACIÓN DE CAMAS
+// ========================================
+
+// Abrir modal de configuración de capacidad
+function openConfigModal() {
+    if (!DOMCache.configModal) return;
+    
+    const totalActual = beds.length;
+    const ocupadas = beds.filter(b => b.occupied).length;
+    const disponibles = totalActual - ocupadas;
+    
+    if (DOMCache.numCamasInput) {
+        DOMCache.numCamasInput.value = totalActual;
+    }
+    
+    if (DOMCache.configCurrentTotal) {
+        DOMCache.configCurrentTotal.textContent = `Camas actuales: ${totalActual}`;
+    }
+    if (DOMCache.configCurrentOccupied) {
+        DOMCache.configCurrentOccupied.textContent = `Ocupadas: ${ocupadas}`;
+    }
+    if (DOMCache.configCurrentAvailable) {
+        DOMCache.configCurrentAvailable.textContent = `Disponibles: ${disponibles}`;
+    }
+    
+    actualizarAdvertenciaConfig();
+    DOMCache.configModal.classList.add('active');
+}
+
+// Cerrar modal de configuración
+function closeConfigModal() {
+    if (!DOMCache.configModal) return;
+    DOMCache.configModal.classList.remove('active');
+}
+
+// Actualizar advertencia si la reducción afectaría camas ocupadas
+function actualizarAdvertenciaConfig() {
+    if (!DOMCache.numCamasInput || !DOMCache.configWarning) return;
+    
+    const valor = parseInt(DOMCache.numCamasInput.value) || 0;
+    if (valor < beds.length && valor >= MIN_CAMAS) {
+        const camasAfectadas = beds.slice(valor).filter(b => b.occupied);
+        if (camasAfectadas.length > 0) {
+            const numeros = camasAfectadas.map(b => `#${b.number}`).join(', ');
+            DOMCache.configWarning.innerHTML = `⚠️ <strong>Atención:</strong> Reducir a ${valor} camas eliminará ${camasAfectadas.length} cama(s) con pacientes (${numeros}).`;
+            DOMCache.configWarning.style.display = 'block';
+            return;
+        }
+    }
+    DOMCache.configWarning.style.display = 'none';
+}
+
+// Ajustar capacidad de camas
+function ajustarCapacidadCamas(nuevaCantidad) {
+    if (isNaN(nuevaCantidad) || nuevaCantidad < MIN_CAMAS || nuevaCantidad > MAX_CAMAS) {
+        mostrarFeedback(`⚠️ La cantidad de camas debe estar entre ${MIN_CAMAS} y ${MAX_CAMAS}`, 'warning');
+        return;
+    }
+    
+    const cantidadActual = beds.length;
+    if (nuevaCantidad === cantidadActual) {
+        closeConfigModal();
+        return;
+    }
+    
+    if (nuevaCantidad > cantidadActual) {
+        // Agregar nuevas camas vacías
+        for (let i = cantidadActual; i < nuevaCantidad; i++) {
+            beds.push({
+                number: i + 1,
+                occupied: false,
+                patientName: '',
+                diagnostico: '',
+                observaciones: '',
+                fechaIngreso: '',
+                tiss: 0,
+                selectedInterventions: []
+            });
+        }
+        previousBedsState = null;
+        saveBeds();
+        renderBedsGrid();
+        closeConfigModal();
+        mostrarFeedback(`✓ Capacidad aumentada a ${nuevaCantidad} camas`, 'success');
+    } else {
+        // Reducir camas: chequear si hay pacientes
+        const camasAfectadas = beds.slice(nuevaCantidad).filter(b => b.occupied);
+        if (camasAfectadas.length > 0) {
+            const listaPacientes = camasAfectadas.map(b => `Cama ${b.number}: ${b.patientName || 'Sin nombre'}`).join('\n');
+            confirmarAccion(
+                `⚠️ ATENCIÓN: Al reducir la capacidad a ${nuevaCantidad} camas se perderán los siguientes pacientes internados:\n\n${listaPacientes}\n\n¿Desea continuar de todos modos?`,
+                () => {
+                    beds = beds.slice(0, nuevaCantidad);
+                    previousBedsState = null;
+                    saveBeds();
+                    renderBedsGrid();
+                    closeConfigModal();
+                    mostrarFeedback(`✓ Capacidad reducida a ${nuevaCantidad} camas`, 'warning');
+                }
+            );
+        } else {
+            beds = beds.slice(0, nuevaCantidad);
+            previousBedsState = null;
+            saveBeds();
+            renderBedsGrid();
+            closeConfigModal();
+            mostrarFeedback(`✓ Capacidad ajustada a ${nuevaCantidad} camas`, 'success');
+        }
+    }
+}
+
 // Event Listeners
 document.addEventListener('DOMContentLoaded', async function() {
     // Inicializar cache de elementos DOM
@@ -901,6 +1045,50 @@ document.addEventListener('DOMContentLoaded', async function() {
     if (cancelarTransferenciaBtn) cancelarTransferenciaBtn.addEventListener('click', cerrarModalTransferencia);
     if (imprimirBtn) imprimirBtn.addEventListener('click', imprimirReporte);
     
+    // Event listeners de Configuración de Capacidad
+    if (DOMCache.configCamasBtn) DOMCache.configCamasBtn.addEventListener('click', openConfigModal);
+    if (DOMCache.closeConfigModal) DOMCache.closeConfigModal.addEventListener('click', closeConfigModal);
+    if (DOMCache.cancelarConfigBtn) DOMCache.cancelarConfigBtn.addEventListener('click', closeConfigModal);
+    
+    if (DOMCache.guardarCapacidadBtn) {
+        DOMCache.guardarCapacidadBtn.addEventListener('click', function() {
+            const nuevaCantidad = parseInt(DOMCache.numCamasInput ? DOMCache.numCamasInput.value : 0);
+            ajustarCapacidadCamas(nuevaCantidad);
+        });
+    }
+    
+    if (DOMCache.btnDecrementarCamas) {
+        DOMCache.btnDecrementarCamas.addEventListener('click', function() {
+            if (DOMCache.numCamasInput) {
+                let val = parseInt(DOMCache.numCamasInput.value) || DEFAULT_NUM_CAMAS;
+                if (val > MIN_CAMAS) {
+                    DOMCache.numCamasInput.value = val - 1;
+                    actualizarAdvertenciaConfig();
+                }
+            }
+        });
+    }
+    
+    if (DOMCache.btnIncrementarCamas) {
+        DOMCache.btnIncrementarCamas.addEventListener('click', function() {
+            if (DOMCache.numCamasInput) {
+                let val = parseInt(DOMCache.numCamasInput.value) || DEFAULT_NUM_CAMAS;
+                if (val < MAX_CAMAS) {
+                    DOMCache.numCamasInput.value = val + 1;
+                    actualizarAdvertenciaConfig();
+                }
+            }
+        });
+    }
+    
+    if (DOMCache.numCamasInput) {
+        DOMCache.numCamasInput.addEventListener('input', function() {
+            let val = parseInt(this.value);
+            if (val > MAX_CAMAS) this.value = MAX_CAMAS;
+            actualizarAdvertenciaConfig();
+        });
+    }
+    
     // Cerrar modales al hacer click fuera
     if (DOMCache.transferModal) {
         DOMCache.transferModal.addEventListener('click', function(e) {
@@ -911,6 +1099,12 @@ document.addEventListener('DOMContentLoaded', async function() {
     if (DOMCache.patientModal) {
         DOMCache.patientModal.addEventListener('click', function(e) {
             if (e.target === this) closeModal();
+        });
+    }
+    
+    if (DOMCache.configModal) {
+        DOMCache.configModal.addEventListener('click', function(e) {
+            if (e.target === this) closeConfigModal();
         });
     }
     
@@ -966,16 +1160,27 @@ document.addEventListener('DOMContentLoaded', async function() {
     // Atajos de teclado
     document.addEventListener('keydown', function(e) {
         const modalAbierto = DOMCache.patientModal?.classList.contains('active');
+        const configModalAbierto = DOMCache.configModal?.classList.contains('active');
+        const transferModalAbierto = DOMCache.transferModal?.classList.contains('active');
         
-        // ESC para cerrar modal
-        if (e.key === 'Escape' && modalAbierto) {
-            closeModal();
+        // ESC para cerrar modales
+        if (e.key === 'Escape') {
+            if (modalAbierto) closeModal();
+            if (configModalAbierto) closeConfigModal();
+            if (transferModalAbierto) cerrarModalTransferencia();
         }
         
         // CTRL+ENTER para guardar (solo en modal de paciente)
         if (e.ctrlKey && e.key === 'Enter' && modalAbierto) {
             e.preventDefault();
             guardarPaciente();
+        }
+        
+        // ENTER en modal de configuración de capacidad
+        if (e.key === 'Enter' && configModalAbierto) {
+            e.preventDefault();
+            const nuevaCantidad = parseInt(DOMCache.numCamasInput ? DOMCache.numCamasInput.value : 0);
+            ajustarCapacidadCamas(nuevaCantidad);
         }
     });
 });

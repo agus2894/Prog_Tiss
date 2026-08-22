@@ -145,8 +145,8 @@ La interfaz fue pensada para uso en rondas y cambios de turno.
 - ✅ **Notas de turno** con persistencia
 
 ### Visualización y Reportes
-- ✅ **Mapa de 22 camas** con código de colores
-- ✅ **Resumen global**: Camas ocupadas, TISS total, Ratio enfermeros
+- ✅ **Mapa de camas con capacidad configurable (1–60 camas)** y código de colores
+- ✅ **Resumen global**: Camas ocupadas (ej: 0/16, 0/22, etc.), TISS total, Ratio enfermeros
 - ✅ **Distribución por clases** (I, II, III, IV)
 - ✅ **Vista de impresión optimizada** (A4 landscape)
 - ✅ **Tooltips informativos** en hover sobre camas

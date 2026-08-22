@@ -105,6 +105,7 @@
             <div class="section-header">
                 <h2 id="beds-heading">Mapa de Camas UTI</h2>
                 <div class="section-actions">
+                    <button id="configCamasBtn" class="btn-outline-small" title="Configurar cantidad de camas de la UTI" aria-label="Configurar capacidad de camas">⚙️ Capacidad</button>
                     <button id="imprimirBtn" class="btn-primary-small" title="Imprimir reporte del turno actual" aria-label="Imprimir reporte">🖨️ Imprimir</button>
                     <button id="limpiarTodoBtn" class="btn-secondary-small" title="Liberar todas las camas (no se puede deshacer)" aria-label="Limpiar todas las camas">🗑️ Limpiar Todo</button>
                 </div>
@@ -136,7 +137,7 @@
                     <span>Clase IV (≥ 40) - Ratio 1:1</span>
                 </div>
             </div>
-        </div>
+        </section>
 
 
 
@@ -430,6 +431,40 @@
                 </div>
                 <div class="transfer-actions">
                     <button id="cancelarTransferenciaBtn" class="btn-secondary" aria-label="Cancelar transferencia">Cancelar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Configuración de Capacidad -->
+    <div id="configModal" class="modal" role="dialog" aria-labelledby="configModalTitle" aria-modal="true" aria-hidden="true">
+        <div class="modal-content config-modal-content">
+            <div class="modal-header">
+                <h2 id="configModalTitle">⚙️ Capacidad de la UTI</h2>
+                <button class="modal-close" id="closeConfigModal" aria-label="Cerrar modal de configuración">&times;</button>
+            </div>
+            <div class="modal-body config-modal-body">
+                <p class="config-modal-description">Ajuste la cantidad total de camas disponibles en el servicio:</p>
+                
+                <div class="config-camas-control">
+                    <button type="button" class="btn-stepper" id="btnDecrementarCamas" aria-label="Disminuir camas">−</button>
+                    <input type="number" id="numCamasInput" min="1" max="60" value="22" aria-label="Cantidad total de camas">
+                    <button type="button" class="btn-stepper" id="btnIncrementarCamas" aria-label="Aumentar camas">+</button>
+                </div>
+
+                <div class="config-stats" id="configStats">
+                    <span id="configCurrentTotal">Camas actuales: 22</span>
+                    <span id="configCurrentOccupied">Ocupadas: 0</span>
+                    <span id="configCurrentAvailable">Disponibles: 22</span>
+                </div>
+
+                <div id="configWarning" class="config-warning" style="display: none;" role="alert">
+                    ⚠️ <strong>Atención:</strong> Reducir la capacidad afectará camas con pacientes internados.
+                </div>
+
+                <div class="config-actions">
+                    <button id="guardarCapacidadBtn" class="btn-primary" aria-label="Guardar capacidad">💾 Guardar Capacidad</button>
+                    <button id="cancelarConfigBtn" class="btn-secondary" aria-label="Cancelar">Cancelar</button>
                 </div>
             </div>
         </div>

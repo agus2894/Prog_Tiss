@@ -359,6 +359,7 @@ header h1 {
 /* Estilos base consolidados para botones */
 .btn-primary-small,
 .btn-secondary-small,
+.btn-outline-small,
 .action-buttons-modal button,
 .btn-primary,
 .btn-secondary,
@@ -393,6 +394,21 @@ header h1 {
 .btn-secondary-small:hover {
     background: #e5e7eb;
     border-color: var(--text-light);
+}
+
+.btn-outline-small {
+    padding: 0.5rem 1rem;
+    background: var(--bg-white);
+    color: var(--primary-color);
+    border: 2px solid var(--primary-color);
+    font-size: var(--font-sm);
+}
+
+.btn-outline-small:hover {
+    background: #eff6ff;
+    border-color: var(--secondary-color);
+    color: var(--secondary-color);
+    transform: translateY(-1px);
 }
 
 /* Beds Grid */
@@ -1190,6 +1206,122 @@ header h1 {
 .transfer-actions button {
     padding: 0.75rem 2rem;
     font-size: 1rem;
+}
+
+/* ========================================
+   MODAL DE CONFIGURACIÓN DE CAPACIDAD
+   ======================================== */
+
+.config-modal-content {
+    max-width: 480px;
+    max-height: 90vh;
+}
+
+.config-modal-body {
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.config-modal-description {
+    font-size: 0.95rem;
+    color: var(--text-secondary);
+    text-align: center;
+    line-height: 1.5;
+}
+
+.config-camas-control {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    margin: 0.5rem 0;
+}
+
+.btn-stepper {
+    width: 44px;
+    height: 44px;
+    border-radius: var(--radius-md);
+    border: 2px solid var(--border-color);
+    background: var(--bg-light);
+    color: var(--text-primary);
+    font-size: 1.5rem;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition-fast);
+}
+
+.btn-stepper:hover {
+    background: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+    transform: scale(1.05);
+}
+
+.btn-stepper:active {
+    transform: scale(0.95);
+}
+
+#numCamasInput {
+    width: 100px;
+    height: 44px;
+    font-size: 1.5rem;
+    font-weight: 800;
+    text-align: center;
+    border: 2px solid var(--border-color);
+    border-radius: var(--radius-md);
+    color: var(--primary-color);
+    background: var(--bg-white);
+    outline: none;
+    transition: var(--transition-fast);
+}
+
+#numCamasInput:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
+
+.config-stats {
+    display: flex;
+    justify-content: space-around;
+    padding: 0.75rem;
+    background: var(--bg-light);
+    border-radius: var(--radius-md);
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    border: 1px solid var(--border-color);
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.config-stats span {
+    font-weight: 500;
+}
+
+.config-warning {
+    background: #fef2f2;
+    border: 1px solid #fca5a5;
+    color: #991b1b;
+    padding: 0.75rem 1rem;
+    border-radius: var(--radius-md);
+    font-size: 0.85rem;
+    line-height: 1.4;
+}
+
+.config-actions {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: 0.5rem;
+}
+
+.config-actions button {
+    flex: 1;
+    padding: 0.75rem 1rem;
+    font-size: var(--font-base);
 }
 
 /* Score Display dentro de results-panel */

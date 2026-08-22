@@ -38,8 +38,11 @@ export const clasificaciones = {
     }
 };
 
-// Número de camas en la UTI
-export const NUM_CAMAS = 22;
+// Número de camas por defecto y límites
+export const DEFAULT_NUM_CAMAS = 22;
+export const NUM_CAMAS = DEFAULT_NUM_CAMAS; // Compatibilidad
+export const MIN_CAMAS = 1;
+export const MAX_CAMAS = 60;
 
 // Estados de guardado
 export const SAVE_STATUS = {
