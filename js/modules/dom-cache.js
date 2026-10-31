@@ -24,6 +24,7 @@ export const DOMCache = {
     modalTitle: null,
     patientName: null,
     diagnostico: null,
+    enfermero: null,
     observaciones: null,
     fechaIngreso: null,
     scoreNumber: null,
@@ -56,6 +57,7 @@ export const DOMCache = {
         this.modalTitle = document.getElementById('modalTitle');
         this.patientName = document.getElementById('patientName');
         this.diagnostico = document.getElementById('diagnostico');
+        this.enfermero = document.getElementById('enfermero');
         this.observaciones = document.getElementById('observaciones');
         this.fechaIngreso = document.getElementById('fechaIngreso');
         this.scoreNumber = document.getElementById('scoreNumber');

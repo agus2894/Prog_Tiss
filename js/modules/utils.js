@@ -30,6 +30,7 @@ export function cloneBedsState(beds) {
         occupied: bed.occupied,
         patientName: bed.patientName,
         diagnostico: bed.diagnostico,
+        enfermero: bed.enfermero,
         observaciones: bed.observaciones,
         fechaIngreso: bed.fechaIngreso,
         tiss: bed.tiss,

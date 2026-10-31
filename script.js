@@ -103,6 +103,7 @@ const DOMCache = {
     modalTitle: null,
     patientName: null,
     diagnostico: null,
+    enfermero: null,
     observaciones: null,
     fechaIngreso: null,
     scoreNumber: null,
@@ -148,6 +149,7 @@ const DOMCache = {
         this.modalTitle = document.getElementById('modalTitle');
         this.patientName = document.getElementById('patientName');
         this.diagnostico = document.getElementById('diagnostico');
+        this.enfermero = document.getElementById('enfermero');
         this.observaciones = document.getElementById('observaciones');
         this.fechaIngreso = document.getElementById('fechaIngreso');
         this.scoreNumber = document.getElementById('scoreNumber');
@@ -178,6 +180,7 @@ function cloneBedsState(beds) {
         occupied: bed.occupied,
         patientName: bed.patientName,
         diagnostico: bed.diagnostico,
+        enfermero: bed.enfermero,
         observaciones: bed.observaciones,
         fechaIngreso: bed.fechaIngreso,
         tiss: bed.tiss,
@@ -248,6 +251,7 @@ async function initializeBeds() {
         occupied: false,
         patientName: '',
         diagnostico: '',
+        enfermero: '',
         observaciones: '',
         fechaIngreso: '',
         tiss: 0,
@@ -343,6 +347,7 @@ function bedHasChanged(bed, previousBed) {
     return bed.occupied !== previousBed.occupied ||
            bed.patientName !== previousBed.patientName ||
            bed.tiss !== previousBed.tiss ||
+           bed.enfermero !== previousBed.enfermero ||
            bed.fechaIngreso !== previousBed.fechaIngreso;
 }
 
@@ -384,8 +389,26 @@ function createBedCard(bed, index) {
             <div class="bed-status">${bed.patientName || 'Paciente'}</div>
             <div class="bed-tiss">${bed.tiss} pts</div>
             ${diasInternado}
+            <input type="text" class="bed-nurse-input" placeholder="👩‍⚕️ Enfermero/a" aria-label="Apellido del enfermero asignado a la cama ${bed.number}" autocomplete="off">
             ${tooltipContent}
         `;
+        
+        // Asignación rápida de enfermero desde el mapa, sin abrir la planilla TISS
+        const nurseInput = bedCard.querySelector('.bed-nurse-input');
+        nurseInput.value = bed.enfermero || '';
+        ['click', 'keydown', 'mousedown'].forEach(evt =>
+            nurseInput.addEventListener(evt, e => e.stopPropagation()));
+        nurseInput.addEventListener('keydown', e => {
+            if (e.key === 'Enter') nurseInput.blur();
+        });
+        nurseInput.addEventListener('change', () => {
+            bed.enfermero = nurseInput.value.trim();
+            nurseInput.value = bed.enfermero;
+            if (previousBedsState && previousBedsState[index]) {
+                previousBedsState[index].enfermero = bed.enfermero;
+            }
+            debouncedSaveBeds();
+        });
     } else {
         bedCard.classList.add('empty');
         bedCard.innerHTML = `
@@ -522,6 +545,7 @@ function openModal(bedIndex) {
     if (DOMCache.modalTitle) DOMCache.modalTitle.textContent = `Cama ${bed.number}`;
     if (DOMCache.patientName) DOMCache.patientName.value = '';
     if (DOMCache.diagnostico) DOMCache.diagnostico.value = '';
+    if (DOMCache.enfermero) DOMCache.enfermero.value = '';
     if (DOMCache.observaciones) DOMCache.observaciones.value = '';
     if (DOMCache.fechaIngreso) DOMCache.fechaIngreso.value = '';
     
@@ -529,6 +553,7 @@ function openModal(bedIndex) {
     if (bed.occupied) {
         if (DOMCache.patientName) DOMCache.patientName.value = bed.patientName || '';
         if (DOMCache.diagnostico) DOMCache.diagnostico.value = bed.diagnostico || '';
+        if (DOMCache.enfermero) DOMCache.enfermero.value = bed.enfermero || '';
         if (DOMCache.observaciones) DOMCache.observaciones.value = bed.observaciones || '';
         if (DOMCache.fechaIngreso) DOMCache.fechaIngreso.value = bed.fechaIngreso || '';
         
@@ -568,6 +593,7 @@ function closeModal() {
     // Limpiar también los campos de texto para evitar cualquier residuo
     if (DOMCache.patientName) DOMCache.patientName.value = '';
     if (DOMCache.diagnostico) DOMCache.diagnostico.value = '';
+    if (DOMCache.enfermero) DOMCache.enfermero.value = '';
     if (DOMCache.observaciones) DOMCache.observaciones.value = '';
     if (DOMCache.fechaIngreso) DOMCache.fechaIngreso.value = '';
     
@@ -614,6 +640,7 @@ function guardarPaciente() {
     bed.occupied = true;
     bed.patientName = nombre;
     bed.diagnostico = DOMCache.diagnostico ? DOMCache.diagnostico.value.trim() : '';
+    bed.enfermero = DOMCache.enfermero ? DOMCache.enfermero.value.trim() : '';
     bed.observaciones = DOMCache.observaciones ? DOMCache.observaciones.value.trim() : '';
     bed.fechaIngreso = DOMCache.fechaIngreso ? DOMCache.fechaIngreso.value : '';
     bed.tiss = puntos;
@@ -692,6 +719,7 @@ function liberarCama() {
                 occupied: false,
                 patientName: '',
                 diagnostico: '',
+                enfermero: '',
                 observaciones: '',
                 fechaIngreso: '',
                 tiss: 0,
@@ -722,6 +750,7 @@ function limpiarTodo() {
                 occupied: false,
                 patientName: '',
                 diagnostico: '',
+                enfermero: '',
                 observaciones: '',
                 fechaIngreso: '',
                 tiss: 0,
@@ -864,6 +893,7 @@ function confirmarTransferencia(camaDestinoIndex) {
                 occupied: true,
                 patientName: bedOrigen.patientName,
                 diagnostico: bedOrigen.diagnostico,
+                enfermero: bedOrigen.enfermero,
                 observaciones: bedOrigen.observaciones,
                 fechaIngreso: bedOrigen.fechaIngreso,
                 tiss: bedOrigen.tiss,
@@ -876,6 +906,7 @@ function confirmarTransferencia(camaDestinoIndex) {
                 occupied: false,
                 patientName: '',
                 diagnostico: '',
+                enfermero: '',
                 observaciones: '',
                 fechaIngreso: '',
                 tiss: 0,
@@ -970,6 +1001,7 @@ function ajustarCapacidadCamas(nuevaCantidad) {
                 occupied: false,
                 patientName: '',
                 diagnostico: '',
+                enfermero: '',
                 observaciones: '',
                 fechaIngreso: '',
                 tiss: 0,

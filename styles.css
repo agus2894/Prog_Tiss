@@ -3791,3 +3791,22 @@ footer p {
         display: none !important;
     }
 }
+
+/* Asignación de enfermero desde el mapa de camas */
+.bed-nurse-input {
+    width: 90%;
+    margin-top: 0.5rem;
+    padding: 0.3rem 0.4rem;
+    font-size: var(--font-xs);
+    text-align: center;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.85);
+    color: var(--text-dark);
+    cursor: text;
+}
+
+.bed-nurse-input:focus {
+    outline: 2px solid var(--primary, #3b82f6);
+    background: #fff;
+}
