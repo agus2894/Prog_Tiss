@@ -1970,11 +1970,9 @@ footer p {
     }
     
     /* Tarjetas de camas legibles: el ancho se ajusta solo según el espacio
-       disponible (sin asumir una hoja fija) y el alto crece con el
-       contenido para que nada quede cortado. El corte de página entre
-       tarjetas se deja al flujo natural del navegador en lugar de un
-       salto fijo tras la cama 9, ya que la cantidad de camas y el tamaño
-       de hoja son configurables. */
+       disponible (sin asumir una hoja fija). La altura queda acotada
+       (junto con el recorte de texto de diagnóstico/observaciones) para
+       que el reporte completo entre siempre en 2 hojas. */
     .bed-card {
         flex: 1 1 calc(16.66% - 0.4rem);
         min-width: 38mm;
@@ -1984,9 +1982,19 @@ footer p {
         break-inside: avoid;
         page-break-inside: avoid;
         min-height: 3cm;
+        max-height: 3.6cm;
         display: flex;
         flex-direction: column;
         gap: 0.15rem;
+        overflow: hidden;
+    }
+    
+    /* Salto forzado al llegar a la mitad de las camas (calculado dinámicamente
+       en JS según la cantidad real de camas cargada), para que el reporte
+       siempre ocupe exactamente 2 hojas sin importar cuántas camas haya. */
+    .bed-card.print-page-break {
+        break-after: page;
+        page-break-after: always;
     }
     
     .bed-card.empty {

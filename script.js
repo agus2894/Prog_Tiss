@@ -736,7 +736,22 @@ function liberarCama() {
 
 // Imprimir
 function imprimirReporte() {
+    prepararSaltoDePagina();
     window.print();
+}
+
+// Marca la mitad de las camas para forzar que la impresión ocupe solo 2 hojas,
+// sin importar cuántas camas haya cargadas actualmente (usa los datos ya en
+// memoria/DOM, no requiere volver a cargar nada).
+function prepararSaltoDePagina() {
+    if (!DOMCache.bedsGrid) return;
+    const cards = DOMCache.bedsGrid.querySelectorAll('.bed-card');
+    cards.forEach(card => card.classList.remove('print-page-break'));
+    if (cards.length === 0) return;
+    const mitad = Math.ceil(cards.length / 2);
+    if (cards[mitad - 1]) {
+        cards[mitad - 1].classList.add('print-page-break');
+    }
 }
 
 // Limpiar todo
@@ -1076,6 +1091,8 @@ document.addEventListener('DOMContentLoaded', async function() {
     if (closeTransferModalBtn) closeTransferModalBtn.addEventListener('click', cerrarModalTransferencia);
     if (cancelarTransferenciaBtn) cancelarTransferenciaBtn.addEventListener('click', cerrarModalTransferencia);
     if (imprimirBtn) imprimirBtn.addEventListener('click', imprimirReporte);
+    // Recalcular el salto de página también si se imprime con Ctrl+P o el menú del navegador
+    window.addEventListener('beforeprint', prepararSaltoDePagina);
     
     // Event listeners de Configuración de Capacidad
     if (DOMCache.configCamasBtn) DOMCache.configCamasBtn.addEventListener('click', openConfigModal);
